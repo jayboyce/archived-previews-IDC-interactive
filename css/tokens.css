@@ -1,0 +1,289 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Design tokens — Sage Fusion (core + mode tokens) + sage.com brand.
+   Dark is product-first; light matches sage.com marketing.
+   Loaded once; flip data-theme on <html> to swap modes.
+   This file is colours/type-scale/spacing only — no component styles.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────
+   Fusion tokens — the Sage design system, v2
+   Source of truth: Sage Fusion (core + mode tokens) + sage.com brand
+   Dark is product-first; light matches sage.com marketing.
+   Load this once; flip `data-theme` on <html> to swap modes.
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── Type faces ─────────────────────────────────────────────── */
+
+
+
+
+
+
+
+
+
+:root {
+  /* ── Core: Sage brand — jade green ──────────────────────── */
+  --core-jade-brilliant:   #00D639;   /* dark-mode primary */
+  --core-jade-accessible:  #008146;   /* light-mode primary */
+  --core-jade-dark:        #006738;
+  --core-jade-darker:      #004D2A;
+  --core-jade-hover:       #33DE61;
+  --core-jade-pressed:     #00B634;
+  --core-jade-disabled:    #66E688;
+  --core-jade-tint-7:      #D1FDE0;   /* pale tint */
+
+  /* ── Core: Sage marketing — brand purple ────────────────── */
+  --core-purple:           #9417ED;
+  --core-purple-deep:      #914BC3;
+  --core-purple-tint:      #F4E6FF;
+
+  /* ── Core: grayscale ────────────────────────────────────── */
+  --core-black:       #000000;
+  --core-gray-s4:     #1B1B1B;   /* surface 4 */
+  --core-gray-s3:     #303030;
+  --core-gray-s2:     #474747;
+  --core-gray-s1:     #5E5E5E;
+  --core-gray-t1:     #777777;
+  --core-gray-t2:     #919191;
+  --core-gray-t3:     #ABABAB;
+  --core-gray-t4:     #C6C6C6;
+  --core-gray-t5:     #E2E2E2;
+  --core-gray-t6:     #F0F0F0;
+  --core-surface-pale:#F2F5F6;
+  --core-surface-mint:#F3F8F6;
+  --core-surface-fog: #F7FCFA;
+  --core-white:       #FFFFFF;
+
+  /* ── Core: status ───────────────────────────────────────── */
+  --core-positive:   #008A21;
+  --core-caution:    #EF6700;
+  --core-negative:   #CD384B;
+  --core-negative-2: #EA433F;
+  --core-focus:      #FFB500;
+  --core-neutral:    #0060A7;
+  --core-info:       #00A4CF;
+
+  /* ── Core: Sage AI gradient stops ───────────────────────── */
+  /* Over-light (dull) — sage.com spec */
+  --ai-light-start:  #13A038;
+  --ai-light-mid:    #0092DB;
+  --ai-light-end:    #8F49FE;
+  /* Over-dark (vibrant) — product spec */
+  --ai-dark-start:   #00D639;
+  --ai-dark-mid:     #11AFFF;
+  --ai-dark-end:     #8F49FE;
+
+  /* ── Core: type scale ───────────────────────────────────── */
+  --font-ui:       'Sage UI', system-ui, -apple-system, sans-serif;
+  --font-text:     'Sage Text', 'Adelle Sans SAGE', system-ui, sans-serif;
+  --font-headline: 'Sage Headline', 'Sage UI', system-ui, sans-serif;
+
+  --fs-50:   11px;   /* meta / caption */
+  --fs-75:   12px;   /* label, caption */
+  --fs-100:  14px;   /* body sm */
+  --fs-200:  16px;   /* body md */
+  --fs-300:  18px;   /* body lg */
+  --fs-400:  20px;
+  --fs-500:  24px;   /* heading sm */
+  --fs-600:  28px;
+  --fs-700:  32px;
+  --fs-800:  40px;   /* display */
+  --fs-900:  56px;
+  --fs-1000: 80px;
+  --fs-1100: 120px;  /* hero headline */
+
+  --fw-regular: 400;   /* @kind font */
+  --fw-medium:  500;   /* @kind font */
+  --fw-bold:    700;   /* @kind font */
+  --fw-black:   900;   /* @kind font */
+
+  --lh-tight:   1.1;   /* @kind font */
+  --lh-heading: 1.2;   /* @kind font */
+  --lh-snug:    1.35;  /* @kind font */
+  --lh-base:    1.5;   /* @kind font */
+  --lh-reading: 1.6;   /* @kind font */
+
+  /* ── Core: space (Fusion — 8pt grid) ────────────────────── */
+  --sp-25:   2px;
+  --sp-50:   4px;
+  --sp-100:  8px;
+  --sp-150:  12px;
+  --sp-200:  16px;
+  --sp-300:  24px;
+  --sp-400:  32px;
+  --sp-500:  40px;
+  --sp-600:  48px;
+  --sp-700:  56px;
+  --sp-800:  64px;
+  --sp-900:  72px;
+  --sp-1000: 80px;
+  --sp-1200: 96px;
+  --sp-1600: 128px;
+
+  /* ── Core: radius ───────────────────────────────────────── */
+  --radius-none: 0;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-3xl:  32px;
+  --radius-4xl:  40px;    /* sage.com hero cards */
+  --radius-pill: 999px;
+
+  /* ── Core: controls ─────────────────────────────────────── */
+  --control-xs: 24px;
+  --control-sm: 28px;
+  --control-md: 32px;
+  --control-lg: 40px;
+  --control-xl: 48px;
+  --topbar-h:   56px;
+  --sidebar-w:  240px;
+
+  /* ── Core: motion ───────────────────────────────────────── */
+  --dur-fast:   120ms;  /* @kind other */
+  --dur-med:    200ms;  /* @kind other */
+  --dur-slow:   320ms;  /* @kind other */
+  --ease-out:   cubic-bezier(0.2, 0.8, 0.2, 1);  /* @kind other */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);   /* @kind other */
+
+  /* ── Core: z-index ──────────────────────────────────────── */
+  --z-nav:      10;    /* @kind other */
+  --z-dropdown: 100;   /* @kind other */
+  --z-overlay:  1000;  /* @kind other */
+  --z-modal:    1100;  /* @kind other */
+  --z-toast:    1200;  /* @kind other */
+}
+
+/* ────────────────────────────────────────────────────────────
+   Semantic (mode) tokens — DARK (product default)
+   ──────────────────────────────────────────────────────────── */
+[data-theme="dark"], :root {
+  color-scheme: dark;
+
+  /* Brand */
+  --brand:            var(--core-jade-brilliant);
+  --brand-hover:      var(--core-jade-hover);
+  --brand-pressed:    var(--core-jade-accessible);
+  --brand-disabled:   var(--core-jade-disabled);
+  --brand-on:         var(--core-black);
+
+  /* Accent (marketing purple, used sparingly in product) */
+  --accent:           var(--core-purple);
+  --accent-hover:     var(--core-purple-deep);
+  --accent-on:        var(--core-white);
+
+  /* Surfaces — elevation ramp */
+  --bg:               var(--core-black);
+  --bg-frame:         #121212;         /* sidebar / topbar */
+  --bg-canvas:        #0A0A0A;         /* document canvas */
+  --surface:          var(--core-gray-s4);
+  --surface-raised:   var(--core-gray-s3);
+  --surface-pressed:  var(--core-gray-s2);
+  --surface-selected: #282828;
+  --surface-hover:    rgba(255,255,255,0.04);
+  --overlay:          rgba(0,0,0,0.6);
+
+  /* Borders */
+  --border:           rgba(255,255,255,0.09);
+  --border-strong:    rgba(255,255,255,0.18);
+  --border-subtle:    rgba(255,255,255,0.06);
+  --border-focus:     var(--core-jade-brilliant);
+
+  /* Text */
+  --fg-1:             var(--core-white);
+  --fg-2:             rgba(255,255,255,0.80);
+  --fg-3:             rgba(255,255,255,0.60);
+  --fg-4:             rgba(255,255,255,0.40);
+  --fg-5:             rgba(255,255,255,0.30);
+  --fg-brand:         var(--core-jade-brilliant);
+  --fg-on-brand:      var(--core-black);
+
+  /* Status — mode aware */
+  --status-positive:  var(--core-jade-brilliant);
+  --status-positive-bg: rgba(0,214,57,0.15);
+  --status-caution:   var(--core-focus);
+  --status-caution-bg: rgba(255,181,0,0.15);
+  --status-negative:  var(--core-negative-2);   /* #EA433F per Figma over-dark */
+  --status-negative-bg: rgba(234,67,63,0.15);
+  --status-neutral:   var(--core-info);
+  --status-neutral-bg: rgba(0,164,207,0.15);
+
+  /* Sage AI — vibrant */
+  --ai-start:    var(--ai-dark-start);   /* @kind color */
+  --ai-mid:      var(--ai-dark-mid);     /* @kind color */
+  --ai-end:      var(--ai-dark-end);     /* @kind color */
+  --ai-gradient: linear-gradient(100deg, #00D639 0%, #00D6DE 30%, #0DCCE0 42%, #29B7E6 52%, #5A99F1 65%, #7C78F8 80%, #9D60FF 100%);  /* @kind color */
+  --ai-gradient-text: linear-gradient(100deg, #00D639 0%, #11AFFF 50%, #9D60FF 100%);  /* @kind color */
+  --ai-glow:     conic-gradient(from 220deg, #8F49FE, #11AFFF, #00D6DE, #00D639, #8F49FE);  /* @kind color */
+
+  /* Shadows */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg:   0 12px 32px rgba(0,0,0,0.6);
+  --shadow-hero: 0 24px 64px rgba(0,0,0,0.7);
+}
+
+/* ────────────────────────────────────────────────────────────
+   Semantic (mode) tokens — LIGHT (sage.com marketing)
+   ──────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --brand:            var(--core-jade-accessible);
+  --brand-hover:      var(--core-jade-dark);
+  --brand-pressed:    var(--core-jade-darker);
+  --brand-disabled:   #9BCAAE;
+  --brand-on:         var(--core-white);
+
+  --accent:           var(--core-purple);
+  --accent-hover:     var(--core-purple-deep);
+  --accent-on:        var(--core-white);
+
+  --bg:               var(--core-white);
+  --bg-frame:         var(--core-surface-pale);
+  --bg-canvas:        var(--core-white);
+  --surface:          var(--core-white);
+  --surface-raised:   var(--core-surface-pale);
+  --surface-pressed:  var(--core-gray-t6);
+  --surface-selected: var(--core-surface-mint);
+  --surface-hover:    rgba(0,0,0,0.04);
+  --overlay:          rgba(0,25,38,0.5);
+
+  --border:           rgba(0,0,0,0.12);
+  --border-strong:    rgba(0,0,0,0.20);
+  --border-subtle:    rgba(0,0,0,0.06);
+  --border-focus:     var(--core-jade-accessible);
+
+  --fg-1:             rgba(0,0,0,0.90);   /* primary text — sage.com */
+  --fg-2:             rgba(0,0,0,0.75);
+  --fg-3:             rgba(0,0,0,0.65);   /* secondary — sage.com */
+  --fg-4:             rgba(0,0,0,0.45);
+  --fg-5:             rgba(0,0,0,0.30);   /* disabled */
+  --fg-brand:         var(--core-jade-accessible);
+  --fg-on-brand:      var(--core-white);
+
+  --status-positive:  var(--core-positive);
+  --status-positive-bg: #D1FDE0;
+  --status-caution:   var(--core-caution);
+  --status-caution-bg: #FFEFDC;
+  --status-negative:  var(--core-negative);
+  --status-negative-bg: #FFECE8;
+  --status-neutral:   var(--core-neutral);
+  --status-neutral-bg: #DDF3FF;
+
+  /* AI — dull variant */
+  --ai-start:    var(--ai-light-start);  /* @kind color */
+  --ai-mid:      var(--ai-light-mid);    /* @kind color */
+  --ai-end:      var(--ai-light-end);    /* @kind color */
+  --ai-gradient: linear-gradient(100deg, #13A038 4%, #0092DB 47%, #8F49FE 77%);  /* @kind color */
+  --ai-gradient-text: linear-gradient(100deg, #13A038 4%, #0092DB 47%, #8F49FE 77%);  /* @kind color */
+  --ai-glow:     conic-gradient(from 220deg, #8F49FE, #0092DB, #13A038, #8F49FE);  /* @kind color */
+
+  --shadow-sm:   0 1px 2px rgba(0,41,64,0.08);
+  --shadow-md:   0 4px 16px rgba(0,41,64,0.10);
+  --shadow-lg:   0 12px 32px rgba(0,41,64,0.14);
+  --shadow-hero: 0 24px 64px rgba(0,41,64,0.18);
+}

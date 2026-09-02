@@ -1,0 +1,307 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Page glue — The Verification Tax (IDC White Paper)
+   ───────────────────────────────────────────────────────────────────
+   The design system now lives in:
+     css/tokens.css        — Sage Fusion tokens
+     css/forma-webdoc.css  — Forma V5 component layer (molecules, web-doc,
+                             infographics, cards, reveals)
+     js/forma-webdoc.js    — Forma behaviour (reveals, scroll-spy, glow,
+                             progress, declarative calculators)
+   This file holds only what is specific to THIS document: the live WebGL
+   shader ground, the cover hero glass card, and a few integration tweaks
+   so the dark web-doc sits transparently over the shader.
+   ═══════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html, body { background: #070807; }
+body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
+
+/* ── Live shader ground ──────────────────────────────────────────────
+   A fixed full-viewport WebGL canvas. The web-doc sits transparently on
+   top of it (see .webdoc override below), so the shader reads as the
+   document's glow: a colour pool behind the cover, easing to an
+   edge-confined near-black floor on the content sections as you scroll. */
+#glowfx {
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  z-index: 0; pointer-events: none; display: block;
+}
+
+/* The web-doc grid is the live layer above the shader. In dark mode the
+   Forma module paints --pg-bg (#070807) on .webdoc; we clear it so the
+   shader shows through, and keep the dark sections transparent. */
+.webdoc { position: relative; z-index: 1; background: transparent; }
+.webdoc[data-paper="dark"] { background: transparent; }
+.no-webgl .webdoc { background: var(--pg-bg); }
+
+/* Rail stays a framed dark column over the shader (its own translucent
+   ground + blur are defined in forma-webdoc.css). Keep it above content. */
+.doc-rail { z-index: 30; }
+.doc-rail__brand img { display: block; height: 22px; width: auto; }
+
+/* Reading-progress bar already fixed by the module; lift above the shader. */
+.doc-progress { z-index: 40; }
+
+/* ── Skip link ───────────────────────────────────────────────────── */
+.skip-link {
+  position: fixed; top: 12px; left: 12px; z-index: 100;
+  background: var(--pg-brand, #00D639); color: #04130a;
+  font-family: var(--font-ui); font-weight: 600; font-size: 13px;
+  padding: 8px 14px; border-radius: 8px; text-decoration: none;
+  transform: translateY(-150%); transition: transform .18s var(--ease-out);
+}
+.skip-link:focus { transform: translateY(0); }
+.doc-canvas:focus { outline: none; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   COVER HERO — frosted-glass title card over the live shader
+   The .doc-section.is-hero gives the tall, centred frame; the shader
+   pools its colour here (u_centerFill ≈ 1 at the top of the scroll).
+   ═══════════════════════════════════════════════════════════════════ */
+/* Full-bleed: the cover fills the canvas column edge-to-edge, flush like the
+   other pages — no floating card, no rounded corners. */
+.cover-hero { padding: 0; }
+.cover-hero .doc-well { max-width: none; width: 100%; }
+
+.cover-glass {
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 40px; min-height: 92vh;
+  padding: clamp(48px, 8vh, 110px) clamp(28px, 6vw, 96px);
+  border-radius: 0; border: 0;
+  /* Flat black tint over the blurred shader — darkens the vibrant glow
+     enough for legible text while staying frosted. */
+  background: rgba(0, 0, 0, 0.30);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  backdrop-filter: blur(22px) saturate(135%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+.no-webgl .cover-glass {
+  background:
+    radial-gradient(120% 120% at 12% 0%, rgba(0, 214, 57, 0.20), transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, rgba(29, 140, 195, 0.16), transparent 60%),
+    rgba(0, 0, 0, 0.55);
+}
+@media (max-width: 900px) {
+  .cover-glass { padding: 40px 24px; gap: 30px; border-radius: 0; min-height: 82vh; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION OPENER — full-bleed split: chapter heading on the dark ground at
+   left, lead photo filling the right column floor-to-ceiling. Mirrors the
+   cover hero. Collapses to a stacked single column on narrow viewports.
+   ═══════════════════════════════════════════════════════════════════ */
+.doc-section.has-split { padding: 0; min-height: 0; }
+/* The text column starts on the same left edge as the centred 1200px content
+   wells (so the indent matches page to page); the photo bleeds to the right
+   edge. Padding-left replicates the well's auto-margin: max(sec-pad, gutter). */
+.sec-split {
+  display: grid; grid-template-columns: 65fr 35fr; gap: clamp(28px, 4vw, 72px);
+  min-height: 86vh; width: 100%;
+  padding-left: max(var(--sec-pad-x), calc((100% - 1200px) / 2));
+}
+.sec-split__text {
+  display: flex; flex-direction: column; justify-content: center; gap: 22px;
+  padding: clamp(44px, 8vh, 96px) 0;
+  position: relative; z-index: 1;
+}
+/* Keep prose at a readable measure even though the column is wide. */
+.sec-split__text > :not(.doc-display) { max-width: 68ch; }
+.sec-split__media { position: relative; overflow: hidden; background: var(--pg-surface); }
+/* Floor-to-ceiling image placeholder (swap for an <img> when art is chosen). */
+.sec-split__ph {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px;
+  background:
+    radial-gradient(120% 100% at 78% 12%, rgba(var(--glow-1), 0.18), transparent 55%),
+    repeating-linear-gradient(45deg, rgba(128,128,128,0.05) 0 11px, rgba(128,128,128,0.09) 11px 22px),
+    var(--pg-surface);
+}
+.sec-split__ph span {
+  font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0.03em;
+  color: var(--pg-fg-3); text-align: center;
+  padding: 7px 12px; border: 1px solid var(--pg-border); border-radius: 8px; background: var(--pg-bg);
+}
+
+/* Ring chart: left-align each cell so the first ring and the labels line up
+   with the surrounding prose. (The default centers content in each grid
+   column, pushing the left column ~40px in from the text edge.) */
+.ig-rings .ig-ring { align-items: flex-start; }
+.sec-split__media > img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  object-position: center; display: block;
+}
+@media (max-width: 768px) {
+  .sec-split { grid-template-columns: 1fr; min-height: 0; padding-left: 0; gap: 0; }
+  .sec-split__text { min-height: 40vh; padding: 40px 24px 30px; }
+  .sec-split__media { aspect-ratio: 16 / 11; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BODY-COLUMN BALANCE
+   The default cols-2 keeps each paragraph whole (break-inside:avoid),
+   which leaves big whitespace gaps when paragraphs are unevenly sized.
+   Letting prose flow across the column break lets the balancer equalise
+   both columns (standard newspaper reading order: down the left, then
+   continue at the top of the right).
+   ═══════════════════════════════════════════════════════════════════ */
+.doc-body.cols-2 p { break-inside: auto; -webkit-column-break-inside: auto; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   DATA-LABEL LEGIBILITY
+   The descriptive body labels inside the infographic components were small
+   and dimmed (12–13px at 55–78% opacity), which made them hard to read.
+   Bump them up and use the brightest theme foreground (reads as white on
+   the dark cards; still theme-correct if the paper ever flips to light).
+   ═══════════════════════════════════════════════════════════════════ */
+.ig-fig__l   { font-size: 15px;   line-height: 1.5;  color: var(--pg-fg); }
+.ig-bar__lbl { font-size: 14.5px; line-height: 1.35; color: var(--pg-fg); }
+.ig-ring__lbl{ font-size: 14px;   line-height: 1.4;  color: var(--pg-fg); }
+.ig-stack__p { font-size: 14px;   line-height: 1.45; color: var(--pg-fg); }
+
+/* Compact bar chart — tighter vertical rhythm for in-column placement. */
+.ig-bars.is-compact { gap: 9px; }
+.ig-bars.is-compact .ig-bar__top { margin-bottom: 3px; }
+
+/* Architecture donut rings use smaller wraps (84–96px) than the default 124px,
+   so the 26px numeral is oversized — scale it down to fit. */
+.doc-section[data-chapter="architecture"] .ig-ring__num { font-size: 18px; }
+
+/* A lede sized to match column-1 width on desktop, full width on mobile
+   (an inline max-width can't be undone by a media query). */
+.doc-lede.is-col1 { max-width: calc(50% - 20px); }
+@media (max-width: 768px) { .doc-lede.is-col1 { max-width: none; } }
+
+/* Wide data tables: keep a legible minimum width so they scroll horizontally
+   inside their overflow-x:auto wrapper on mobile instead of char-wrapping. */
+.ig-table.is-scroll { min-width: 720px; }
+@media (max-width: 768px) {
+  .ig-table.is-scroll th, .ig-table.is-scroll td { overflow-wrap: normal; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STAT-FIGURE LAYOUT — five cards as 3 + 2
+   When a section has exactly five stat cards, lay them three to a row so
+   they read as 3-on-top / 2-on-bottom. The bottom two keep the same width
+   as the cards directly above and sit left-aligned (the third slot is left
+   empty). Sections with three or four cards keep their default layout.
+   ═══════════════════════════════════════════════════════════════════ */
+.ig-figs:has(> .ig-fig:nth-child(5):last-child) {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch;
+}
+@media (max-width: 760px) {
+  .ig-figs:has(> .ig-fig:nth-child(5):last-child) { grid-template-columns: 1fr 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXEC — "Three things you need to know"
+   A plain stacked list: all three points visible at once, no scroll
+   interaction. Single column (not .pillargrid) because point 3 runs ~3x
+   longer than the others — in three narrow columns the row height is set
+   by the longest card and the short ones read as half-empty.
+   Uses the shared .card component; the numeral sits inline with the title.
+   ═══════════════════════════════════════════════════════════════════ */
+.execstack__head { margin-bottom: 8px; text-align: center; }
+.execlist { display: flex; flex-direction: column; gap: 16px; margin-top: 40px; }
+.execlist__card {
+  padding: 32px 36px; gap: 14px; height: auto;
+  /* per-card glow — hue and origin vary so the three don't read identical */
+  --card-glow: var(--glow-3);
+  --glow-pos: 100% 0%;
+  --glow-a: 0.10;
+  background: radial-gradient(130% 120% at var(--glow-pos), rgba(var(--card-glow), var(--glow-a)), transparent 55%), #0E1210;
+  border: 1px solid rgba(var(--card-glow), 0.20);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.execlist__card:nth-child(2) { --card-glow: var(--glow-1); --glow-pos: 6% 0%;   --glow-a: 0.13; }
+.execlist__card:nth-child(3) { --card-glow: var(--glow-2); --glow-pos: 88% 100%; --glow-a: 0.11; }
+.execlist__head { display: flex; align-items: center; gap: 16px; }
+.execlist__card .card__icon.is-numeral { width: 42px; height: 42px; border-radius: 11px; font-size: 18px; }
+.execlist__title { font-size: 22px; line-height: 1.2; }
+.execlist__body { font-size: 16px; line-height: 1.6; max-width: 78ch; }
+@media (max-width: 900px) {
+  .execlist { gap: 14px; margin-top: 28px; }
+  .execlist__card { padding: 26px 24px; }
+  .execlist__head { gap: 13px; }
+  .execlist__title { font-size: 19px; }
+  .execlist__body { font-size: 15px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MERGED SECTIONS — a chapter title/beat fused with the page below it.
+   These sections hold two stacked .doc-well blocks. Align every well to the
+   wide measure so the heading shares the body's left edge, and add breathing
+   room between the heading block and the content beneath it.
+   ═══════════════════════════════════════════════════════════════════ */
+.doc-section:has(> .doc-well + .doc-well) > .doc-well { max-width: 1200px; }
+.doc-section > .doc-well + .doc-well { margin-top: clamp(36px, 5vh, 60px); }
+
+/* Standalone chapter dividers: align the heading to the same wide measure as
+   the body pages so the left indent matches across the document. */
+.doc-section.is-divider > .doc-well { max-width: 1200px; }
+
+.cover-glass__top { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.cover-glass__top img { display: block; height: 23px; width: auto; }
+.cover-glass .m-caption { color: rgba(255, 255, 255, 0.74); }
+.cover-glass .m-caption strong { color: #fff; }
+
+.cover-glass__head { display: flex; flex-direction: column; }
+.cover-kicker, .cover-title {
+  font-size: clamp(38px, 4.4vw, 60px); line-height: 1.06;
+  color: #fff; margin: 0; padding: 0; text-wrap: balance;
+}
+.cover-kicker { font-family: var(--font-ui); font-weight: 400; letter-spacing: 0; }
+.cover-title  { font-family: var(--font-headline); font-weight: 900; letter-spacing: 0; margin-top: 10px; }
+.cover-title .accent { color: var(--pg-brand); }
+.cover-glass__foot .m-rule { background: rgba(255, 255, 255, 0.18); }
+
+/* Cover entrance — glass settles in, then the three blocks rise + fade. */
+@keyframes coverGlassIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes coverRise    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.cover-glass       { animation: coverGlassIn 0.7s var(--ease-out) 0.05s both; }
+.cover-glass__top  { animation: coverRise 0.6s var(--ease-out) 0.20s both; }
+.cover-glass__head { animation: coverRise 0.6s var(--ease-out) 0.45s both; }
+.cover-glass__foot { animation: coverRise 0.6s var(--ease-out) 0.70s both; }
+@media (prefers-reduced-motion: reduce) {
+  .cover-glass, .cover-glass__top, .cover-glass__head, .cover-glass__foot { animation: none !important; }
+}
+
+/* ── Scatter plot figure (industry section) keeps the type legible ──── */
+.fig-scatter svg { width: 100%; height: auto; font-family: var(--font-ui); }
+
+/* ── Analyst portrait ───────────────────────────────────────────────── */
+.analyst-portrait {
+  width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--pg-mint); display: block;
+}
+
+/* ── Mobile: the module collapses the rail to a top bar already; make sure
+   the cover card breathes and the shader still fills behind. ─────────── */
+@media (max-width: 900px) {
+  #glowfx { height: 100dvh; }
+}
+
+/* ── Rail actions: Share (secondary stroke-green) + Download (tertiary).
+   Uses the Sage kit pill (border-radius 999px, font-ui). Lives inside
+   .doc-rail__list so it sits under "About this research" on desktop and
+   inside the chapter dropdown on mobile. Inherits the rail's --pg-* tokens. */
+.doc-rail__actions { display: flex; flex-direction: column; align-items: center; gap: 8px; width: fit-content; margin: 16px 10px 4px; }
+.rail-action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
+  font-family: var(--font-ui); font-weight: 500; font-size: 13px; letter-spacing: .01em; line-height: 1; text-decoration: none;
+  transition: background .14s var(--ease-out), border-color .14s var(--ease-out), color .14s var(--ease-out);
+}
+.rail-action svg { width: 15px; height: 15px; flex: none; }
+/* Share — Sage secondary: full white stroke + white label at rest,
+   highlights to green (stroke, label, icon) on hover/active. */
+.rail-action--secondary { background: transparent; color: var(--pg-fg); border-color: rgba(255,255,255,.85); }
+.rail-action--secondary:hover, .rail-action--secondary:focus-visible, .rail-action--secondary:active {
+  color: var(--pg-brand); border-color: var(--pg-brand); background: color-mix(in srgb, var(--pg-brand) 10%, transparent); }
+.rail-action--secondary.is-copied { color: var(--pg-brand); border-color: var(--pg-brand); background: color-mix(in srgb, var(--pg-brand) 12%, transparent); }
+/* Download — Sage tertiary: white text link, white underline under icon + label.
+   Uses border-bottom (not text-decoration) so the rule also spans the icon. */
+.rail-action--tertiary { width: auto; gap: 7px;
+  background: transparent; border: 0; border-radius: 0; padding: 5px 2px 3px;
+  color: #fff; font-weight: 500; text-decoration: none;
+  border-bottom: 1px solid #fff; }
+.rail-action--tertiary:hover { color: #fff; border-bottom-color: rgba(255,255,255,.6); }
+@media (max-width: 900px) { .doc-rail__actions { margin: 8px 0 2px; } }

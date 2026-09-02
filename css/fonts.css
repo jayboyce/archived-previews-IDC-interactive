@@ -1,0 +1,78 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Fonts — the ONE place font sources live.
+   ───────────────────────────────────────────────────────────────────
+   Three families (Sage UI, Sage Text, Sage Headline) are referenced
+   everywhere else only through the --font-ui / --font-text /
+   --font-headline tokens in tokens.css. The actual files are wired up
+   here and NOWHERE else.
+
+   To move from self-hosted to a CDN/hosted source later, you only edit
+   this file: change --font-base below and the url()s follow. Nothing in
+   tokens.css or styles.css needs to change.
+
+       Self-hosted (default):  --font-base: "../fonts";
+       Hosted example:         --font-base: "https://cdn.sage.com/fonts";
+
+   Note: @font-face url() cannot read a CSS variable, so --font-base is a
+   documentation/anchor for the chosen base path; the url()s below use it
+   verbatim. Keep them in sync if you change the base.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Base path for all font files. Change in one place; update url()s to match. */
+  --font-base: "../fonts";
+}
+
+/* ── Sage UI — product chrome, nav, buttons ─────────────────────── */
+@font-face {
+  font-family: "Sage UI";
+  src: url("../fonts/sage-ui-400.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage UI";
+  src: url("../fonts/sage-ui-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage UI";
+  src: url("../fonts/sage-ui-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ── Sage Text — long-form reading ──────────────────────────────── */
+@font-face {
+  font-family: "Sage Text";
+  src: url("../fonts/sage-text-300.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage Text";
+  src: url("../fonts/sage-text-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage Text";
+  src: url("../fonts/sage-text-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage Text";
+  src: url("../fonts/sage-text-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ── Sage Headline — the big display weights ────────────────────── */
+@font-face {
+  font-family: "Sage Headline";
+  src: url("../fonts/sage-headline-900.woff") format("woff");
+  font-weight: 900;
+  font-display: swap;
+}
