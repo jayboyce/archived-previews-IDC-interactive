@@ -12,8 +12,7 @@ rendered output so it can be published via GitHub Pages, which requires a public
 repo on a free plan. Do not develop here — changes made here will be overwritten
 on the next publish.
 
-Built from `exploration/inspo` @ `a96fd9f` + uncommitted content sync to the
-September 2026 IDC PDF (2026-09-08).
+Built from `main` @ `a15e063` — the September 2026 IDC PDF sync (2026-09-08).
 
 ## What is included
 
