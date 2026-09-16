@@ -12,7 +12,7 @@ rendered output so it can be published via GitHub Pages, which requires a public
 repo on a free plan. Do not develop here — changes made here will be overwritten
 on the next publish.
 
-Built from `main` @ `a15e063` — the September 2026 IDC PDF sync (2026-09-08).
+Built from `main` @ `aab72fc` — the 2026-09-16 legibility pass.
 
 ## What is included
 

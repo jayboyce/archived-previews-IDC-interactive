@@ -206,13 +206,13 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   /* per-card glow — hue and origin vary so the three don't read identical */
   --card-glow: var(--glow-3);
   --glow-pos: 100% 0%;
-  --glow-a: 0.10;
+  --glow-a: 0.05;
   background: radial-gradient(130% 120% at var(--glow-pos), rgba(var(--card-glow), var(--glow-a)), transparent 55%), #0E1210;
-  border: 1px solid rgba(var(--card-glow), 0.20);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--card-glow), 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.execlist__card:nth-child(2) { --card-glow: var(--glow-1); --glow-pos: 6% 0%;   --glow-a: 0.13; }
-.execlist__card:nth-child(3) { --card-glow: var(--glow-2); --glow-pos: 88% 100%; --glow-a: 0.11; }
+.execlist__card:nth-child(2) { --card-glow: var(--glow-1); --glow-pos: 6% 0%;   --glow-a: 0.065; }
+.execlist__card:nth-child(3) { --card-glow: var(--glow-2); --glow-pos: 88% 100%; --glow-a: 0.055; }
 .execlist__head { display: flex; align-items: center; gap: 16px; }
 .execlist__card .card__icon.is-numeral { width: 42px; height: 42px; border-radius: 11px; font-size: 18px; }
 .execlist__title { font-size: 22px; line-height: 1.2; }
@@ -279,7 +279,7 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   #glowfx { height: 100dvh; }
 }
 
-/* ── Rail actions: Share (secondary stroke-green) + Download (tertiary).
+/* ── Rail action: Download (tertiary). Share button removed 2026-09-16 (Jay).
    Uses the Sage kit pill (border-radius 999px, font-ui). Lives inside
    .doc-rail__list so it sits under "About this research" on desktop and
    inside the chapter dropdown on mobile. Inherits the rail's --pg-* tokens. */
@@ -291,12 +291,6 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   transition: background .14s var(--ease-out), border-color .14s var(--ease-out), color .14s var(--ease-out);
 }
 .rail-action svg { width: 15px; height: 15px; flex: none; }
-/* Share — Sage secondary: full white stroke + white label at rest,
-   highlights to green (stroke, label, icon) on hover/active. */
-.rail-action--secondary { background: transparent; color: var(--pg-fg); border-color: rgba(255,255,255,.85); }
-.rail-action--secondary:hover, .rail-action--secondary:focus-visible, .rail-action--secondary:active {
-  color: var(--pg-brand); border-color: var(--pg-brand); background: color-mix(in srgb, var(--pg-brand) 10%, transparent); }
-.rail-action--secondary.is-copied { color: var(--pg-brand); border-color: var(--pg-brand); background: color-mix(in srgb, var(--pg-brand) 12%, transparent); }
 /* Download — Sage tertiary: white text link, white underline under icon + label.
    Uses border-bottom (not text-decoration) so the rule also spans the icon. */
 .rail-action--tertiary { width: auto; gap: 7px;
@@ -305,3 +299,127 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   border-bottom: 1px solid #fff; }
 .rail-action--tertiary:hover { color: #fff; border-bottom-color: rgba(255,255,255,.6); }
 @media (max-width: 900px) { .doc-rail__actions { margin: 8px 0 2px; } }
+
+/* ═══════════════════════════════════════════════════════════════════
+   LEGIBILITY SCALE — 2026-09-16
+   Stakeholder feedback: type too small in places, and too much on screen
+   at once. Every reading size steps up 2–4px and picks up a touch more
+   contrast; the long sections are split into more, shorter pages in
+   index.html (see .doc-runhead below for the "continued" running head).
+   Loaded after forma-webdoc.css, so same-specificity rules here win.
+   ═══════════════════════════════════════════════════════════════════ */
+.webdoc[data-paper="dark"] { --pg-fg-2: rgba(255, 255, 255, 0.86); --pg-fg-3: rgba(255, 255, 255, 0.62); }
+
+/* Prose */
+.doc-body { font-size: 18px; line-height: 1.65; max-width: 58ch; } /* ~72 chars/line in this face */
+.doc-body p { margin-bottom: 18px; }
+.doc-body.cols-2 { column-gap: 52px; }
+.doc-lede { font-size: 18px; line-height: 1.65; max-width: 58ch; }
+.doc-h2 { font-size: clamp(24px, 2.5vw, 32px); line-height: 1.16;
+  /* Long headings break into two balanced lines instead of one long line
+     (text-wrap: balance is already on .doc-h2; it just needed a measure). */
+  max-width: 20em; }
+.doc-kicker, .card__eyebrow, .ig-cap, .doc-keyline span { font-size: 15px; }
+.m-caption { font-size: 16px; line-height: 1.55; }
+.m-bullets { gap: 12px; }
+.m-bullets li { font-size: 18px; line-height: 1.65; padding-left: 26px; }
+.m-bullets li::before { top: 9px; }
+
+/* Cards and lists */
+.card { gap: 14px; padding: 28px; }
+.card__title { font-size: 20px; }
+.card__body { font-size: 18px; line-height: 1.65; max-width: 48ch; }
+.execlist__title { font-size: 24px; }
+.execlist__body { font-size: 18px; line-height: 1.65; }
+.doc-steps li { padding: 28px 0; gap: 10px; }
+.doc-steps .s-t { font-size: 20px; margin-bottom: 8px; }
+.doc-steps .s-d { font-size: 18px; line-height: 1.65; }
+
+/* Tables */
+.ig-table { font-size: 16px; }
+.ig-table th, .ig-table td { padding: 14px 16px; }
+.ig-table thead th { font-size: 14px; }
+.ig-table.is-scroll { min-width: 820px; }
+
+/* Infographic labels (supersede the earlier data-label block above) */
+.ig-foot { font-size: 16px; line-height: 1.55; color: var(--pg-fg-2); }
+.ig-fig { padding: 28px 28px 30px; }
+.ig-fig__n { font-size: 44px; }
+.ig-fig__l { font-size: 16px; line-height: 1.5; margin-top: 14px; }
+.ig-bar__lbl { font-size: 16px; line-height: 1.4; }
+.ig-bar__val { font-size: 22px; }
+.ig-bars.is-compact .ig-bar__lbl { font-size: 16px; }
+.ig-ring__lbl { font-size: 16px; line-height: 1.45; width: 22ch; }
+.ig-ring__num { font-size: 28px; }
+.ig-stack__layer { padding: 16px 26px 16px 36px; gap: 4px; }
+.ig-stack__n { font-size: 18px; }
+.ig-stack__p { font-size: 16px; line-height: 1.5; }
+
+/* Calculator */
+.ig-calc__k { font-size: 15px; }
+.ig-calc__k b { font-size: 17px; }
+.ig-calc__rk { font-size: 16px; }
+.ig-calc__rv { font-size: 28px; }
+.ig-calc__row--total .ig-calc__rv { font-size: 34px; }
+
+/* Page frame — desktop and laptop. A short page (a heading and two
+   paragraphs) was a 62vh band with 8vh padding, which reads as a strip, not a
+   page. Fill the viewport and open up the vertical padding so the content sits
+   in proper top/bottom space. Hero, dividers and the exec card stack keep
+   their own floors (their two-class selectors win on specificity). */
+@media (min-width: 901px) {
+  .webdoc { --sec-pad-y: clamp(96px, 12vh, 160px); }
+  .doc-section { min-height: 100vh; }
+}
+
+/* Rail + small print */
+.navrow { font-size: 14px; padding: 9px 10px; }
+.doc-rail__eyebrow { font-size: 11px; }
+.doc-rail__foot { font-size: 12px; }
+.doc-avatar__role { font-size: 15px; }
+
+/* Running head for a page that continues the previous one: optional
+   numeral chip + the section title, then a green "continued" tag. */
+.doc-runhead { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.doc-runhead .card__icon.is-numeral { width: 34px; height: 34px; border-radius: 9px; font-size: 15px; }
+.doc-runhead__t { font-family: var(--font-text); font-weight: 500; font-size: 18px; color: var(--pg-fg); }
+.doc-runhead__c { font-family: var(--font-text); font-size: 15px; color: var(--pg-fg); }
+.doc-runhead__c::before { content: "·"; margin-right: 12px; color: var(--pg-fg-4); }
+
+@media (max-width: 760px) {
+  .doc-body { font-size: 17px; }
+  .doc-lede { font-size: 17px; }
+  .card__body, .doc-steps .s-d, .m-bullets li, .execlist__body { font-size: 17px; }
+  .ig-fig__l { font-size: 15px; }
+  .ig-table { font-size: 14px; }
+  .ig-table th, .ig-table td { padding: 11px 12px; }
+  .ig-fig__n { font-size: 38px; }
+  .ig-ring__lbl { width: auto; }
+}
+
+/* Insight "Core Finding" titles: same measure rule as .doc-h2 so a long
+   title breaks into two balanced lines instead of one full-width line. */
+.insight-title { font-size: clamp(26px, 3vw, 40px); max-width: 18em; }
+
+/* Essay 2 trust-requirement rings: three across, label beneath each ring,
+   inside the single 66ch prose column (replaces a 2-col text split that
+   left the intro stranded on the left and the rings on the right). */
+.essay-rings { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px;
+  /* wider than the 58ch prose measure so the three labels sit on two lines */
+  width: 78ch; max-width: none; }
+.essay-rings .ig-ring { align-items: flex-start; gap: 14px; }
+.essay-rings .ig-ring__lbl { width: auto; }
+@media (max-width: 720px) { .essay-rings { grid-template-columns: 1fr; width: auto; } }
+
+/* Two-column prose: a paragraph never splits across the column break.
+   A sentence continuing at the top of the next column reads as broken
+   (Jay, 2026-09-16). Odd paragraph counts leave one column shorter, which
+   is the lesser evil. */
+.doc-body.cols-2 p { break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid; }
+
+/* Card glow + stroke, toned down document-wide (Jay, 2026-09-16: "too
+   intense"). Corner glow at half the system alpha; accent cards on a
+   quieter tint and a softer brand-coloured hairline. */
+.fx-cornerglow::after { background: radial-gradient(circle, hsl(var(--glow-h, 150) 88% 62% / 0.09), transparent 70%); }
+.card.is-accent { background: color-mix(in srgb, var(--pg-brand) 4%, transparent);
+  border-color: color-mix(in srgb, var(--pg-brand) 18%, transparent); }
