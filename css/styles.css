@@ -105,7 +105,7 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   position: relative; z-index: 1;
 }
 /* Keep prose at a readable measure even though the column is wide. */
-.sec-split__text > :not(.doc-display) { max-width: 68ch; }
+.sec-split__text > :not(.doc-display) { max-width: 58ch; } /* was 68ch; matches the prose measure (Jay: "this column is too wide") */
 .sec-split__media { position: relative; overflow: hidden; background: var(--pg-surface); }
 /* Floor-to-ceiling image placeholder (swap for an <img> when art is chosen). */
 .sec-split__ph {
@@ -482,7 +482,7 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 /* Dense variant of the wide-figure pair (confidence rings page): text back to
    40%, body at the 16px data-label size, heading one step down, so three
    paragraphs and seven rings share one screen without the text towering. */
-.doc-pair.is-figwide.is-dense { grid-template-columns: 2fr 3fr; }
+.doc-pair.is-figwide.is-dense { grid-template-columns: 9fr 11fr; } /* 45/55 — Jay: "a little wider" than 40 */
 .doc-pair.is-dense .doc-h2 { font-size: 28px; }
 .doc-pair.is-dense .doc-body { font-size: 16px; line-height: 1.6; }
 .doc-pair.is-dense .ig-rings.is-list { gap: 40px 28px; margin-top: 10px; }
@@ -505,3 +505,10 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
    card's 44px column gap; the card's 28px padding inset is absorbed.) */
 .doc-body.is-halfcol { max-width: calc(50% - 22px); }
 @media (max-width: 760px) { .doc-body.is-halfcol { max-width: none; } }
+
+/* Lede in a narrow pair column (market-reality opener): 16px so the third-
+   width column reads comfortably. */
+.doc-lede.is-sm { font-size: 16px; line-height: 1.6; }
+
+/* Stat-page opener with a longer lede (market reality): text 40% not a third. */
+.doc-pair.is-figwide.is-text40 { grid-template-columns: 2fr 3fr; }

@@ -12,7 +12,7 @@ rendered output so it can be published via GitHub Pages, which requires a public
 repo on a free plan. Do not develop here — changes made here will be overwritten
 on the next publish.
 
-Built from `main` @ `3f5cdf6` — the 2026-09-17 two-column amends.
+Built from `main` @ `46ba81b` — the 2026-09-17 two-column amends and follow-ups.
 
 ## What is included
 
