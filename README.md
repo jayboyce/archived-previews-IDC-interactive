@@ -12,7 +12,7 @@ rendered output so it can be published via GitHub Pages, which requires a public
 repo on a free plan. Do not develop here — changes made here will be overwritten
 on the next publish.
 
-Built from `main` @ `aab72fc` — the 2026-09-16 legibility pass.
+Built from `main` @ `3f5cdf6` — the 2026-09-17 two-column amends.
 
 ## What is included
 

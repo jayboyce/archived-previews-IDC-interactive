@@ -213,8 +213,8 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 }
 .execlist__card:nth-child(2) { --card-glow: var(--glow-1); --glow-pos: 6% 0%;   --glow-a: 0.065; }
 .execlist__card:nth-child(3) { --card-glow: var(--glow-2); --glow-pos: 88% 100%; --glow-a: 0.055; }
-.execlist__head { display: flex; align-items: center; gap: 16px; }
-.execlist__card .card__icon.is-numeral { width: 42px; height: 42px; border-radius: 11px; font-size: 18px; }
+.execlist__head { display: flex; align-items: center; gap: 30px; }
+.execlist__card .card__icon.is-numeral { width: 46px; height: 46px; border-radius: 12px; font-size: 20px; }
 .execlist__title { font-size: 22px; line-height: 1.2; }
 .execlist__body { font-size: 16px; line-height: 1.6; max-width: 78ch; }
 @media (max-width: 900px) {
@@ -330,7 +330,7 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 .card__title { font-size: 20px; }
 .card__body { font-size: 18px; line-height: 1.65; max-width: 48ch; }
 .execlist__title { font-size: 24px; }
-.execlist__body { font-size: 18px; line-height: 1.65; }
+.execlist__body { font-size: 18px; line-height: 1.65; max-width: 74ch; margin-left: 76px; } /* runs the card width, indented past the numeral (46px + 30px gap) so it sits under the title */
 .doc-steps li { padding: 28px 0; gap: 10px; }
 .doc-steps .s-t { font-size: 20px; margin-bottom: 8px; }
 .doc-steps .s-d { font-size: 18px; line-height: 1.65; }
@@ -390,6 +390,7 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   .doc-body { font-size: 17px; }
   .doc-lede { font-size: 17px; }
   .card__body, .doc-steps .s-d, .m-bullets li, .execlist__body { font-size: 17px; }
+  .execlist__body { margin-left: 0; } /* no room to indent on phones */
   .ig-fig__l { font-size: 15px; }
   .ig-table { font-size: 14px; }
   .ig-table th, .ig-table td { padding: 11px 12px; }
@@ -423,3 +424,84 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 .fx-cornerglow::after { background: radial-gradient(circle, hsl(var(--glow-h, 150) 88% 62% / 0.09), transparent 70%); }
 .card.is-accent { background: color-mix(in srgb, var(--pg-brand) 4%, transparent);
   border-color: color-mix(in srgb, var(--pg-brand) 18%, transparent); }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROSE + FIGURE PAIR — body copy in the left column at its normal
+   measure, the figure beside it instead of full-width underneath.
+   Stacks on narrow screens. Runhead above stays full width.
+   ═══════════════════════════════════════════════════════════════════ */
+.doc-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* even split — Jay: uneven looked odd */
+  column-gap: clamp(40px, 5vw, 80px);
+  align-items: start;
+}
+.doc-pair > .doc-body { max-width: none; }
+.doc-pair > .ig-bars, .doc-pair > .card, .doc-pair__col > .ig-bars { margin-top: 30px; }
+.doc-pair__col { min-width: 0; } /* right column holding a figure plus prose beneath it */
+.doc-pair > .card { height: auto; } /* .card's height:100% resolves against the grid row (incl. its own margin) and adds a phantom bottom gap */ /* sits level with the first line of prose */
+@media (max-width: 1100px) { /* below this each column drops under ~40ch, so stack */
+  .doc-pair { grid-template-columns: 1fr; }
+  .doc-pair > .doc-body { max-width: 58ch; }
+  .doc-pair > .ig-bars, .doc-pair > .card, .doc-pair__col > .ig-bars { margin-top: 32px; }
+}
+
+/* Wide-figure variant: text 40 / figure 60, for a chart that needs the room
+   (the seven confidence rings). Rings become a two-column list, ring beside
+   its label, so there is no orphan slot. */
+.doc-pair.is-figwide { grid-template-columns: 1fr 2fr; } /* text a third, figure two thirds */
+.doc-pair__text > .doc-body { max-width: none; }
+.ig-rings.is-list { display: grid; grid-template-columns: 1fr 1fr; gap: 48px 28px; align-items: start; margin-top: 6px; }
+.ig-rings.is-list .ig-ringrow { display: contents; }
+.ig-rings.is-list .ig-ring { flex-direction: row; align-items: center; gap: 16px; }
+.ig-rings.is-list .ig-ring__wrap { width: 92px; height: 92px; flex: none; }
+.ig-rings.is-list .ig-ring__num { font-size: 22px; }
+.ig-rings.is-list .ig-ring__lbl { width: auto; font-size: 15px; }
+@media (max-width: 1100px) { .doc-pair.is-figwide { grid-template-columns: 1fr; } .ig-rings.is-list { margin-top: 28px; } }
+@media (max-width: 560px) { .ig-rings.is-list { grid-template-columns: 1fr; } }
+
+/* Feature stat: one ring, shown large, sentence beneath — for a right column
+   built around a single number (architecture pillar 1). */
+.doc-pair__col > .ig-rings.is-feature { margin-top: 74px; align-items: flex-start; } /* level with the heading, not the numeral */
+.ig-rings.is-feature .ig-ringrow { display: flex; flex-direction: row; align-items: center; gap: 24px; } /* ring beside its sentence (Jay, 2026-09-17) */
+.ig-rings.is-feature .ig-ring__wrap { width: 148px; height: 148px; flex: none; }
+.ig-rings.is-feature .ig-ring__num { font-size: 34px; }
+.ig-rings.is-feature .ig-ring__lbl { width: auto; max-width: 34ch; font-size: 18px; line-height: 1.5; }
+@media (max-width: 1100px) { .doc-pair__col > .ig-rings.is-feature { margin-top: 28px; } }
+
+/* Stacked ring list: one ring per row, ring beside its label (pillar 2). */
+.ig-rings.is-list.is-stack { grid-template-columns: 1fr; gap: 26px; margin-top: 30px; }
+.ig-rings.is-list.is-stack .ig-ring__wrap { width: 84px; height: 84px; }
+.ig-rings.is-list.is-stack .ig-ring__lbl { font-size: 16px; }
+.doc-pair__col > .doc-keyline, .doc-pair__col > .m-bullets, .doc-pair__col > .doc-body { max-width: none; }
+
+/* Stat-card grid inside a pair column: two across, level with the kicker. */
+.doc-pair > .ig-figs, .doc-pair > .ig-figs:has(> .ig-fig:nth-child(5):last-child), .doc-pair__col > .ig-figs:has(> .ig-fig:nth-child(5):last-child) { grid-template-columns: 1fr 1fr; margin-top: 6px; } /* second selector out-ranks the global five-card rule */
+
+/* Dense variant of the wide-figure pair (confidence rings page): text back to
+   40%, body at the 16px data-label size, heading one step down, so three
+   paragraphs and seven rings share one screen without the text towering. */
+.doc-pair.is-figwide.is-dense { grid-template-columns: 2fr 3fr; }
+.doc-pair.is-dense .doc-h2 { font-size: 28px; }
+.doc-pair.is-dense .doc-body { font-size: 16px; line-height: 1.6; }
+.doc-pair.is-dense .ig-rings.is-list { gap: 40px 28px; margin-top: 10px; }
+.doc-pair.is-dense .ig-rings.is-list .ig-ring__wrap { width: 88px; height: 88px; }
+
+/* Three stat cards stacked in a pair column (Business impact risks page). */
+.doc-pair > .ig-figs.is-stack { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 30px; } /* .ig-figs is a flex row by default */
+.doc-pair > .ig-figs.is-stack .ig-fig { min-height: 0; }
+
+.doc-pair__col > .doc-kicker { margin-top: 10px; } /* level with the chapter title's cap height */
+.doc-pair__text > .doc-lede { max-width: none; }
+
+/* Full-width accent card with its copy in two columns (Insight 2 implication). */
+.card.is-wide { max-width: none; }
+.card.is-wide .card__body { max-width: none; column-count: 2; column-gap: 44px; }
+@media (max-width: 760px) { .card.is-wide .card__body { column-count: 1; } }
+
+/* Prose above a full-width two-column card: match the card's left column so
+   the paragraph's right edge sits on the column break. (50% minus half the
+   card's 44px column gap; the card's 28px padding inset is absorbed.) */
+.doc-body.is-halfcol { max-width: calc(50% - 22px); }
+@media (max-width: 760px) { .doc-body.is-halfcol { max-width: none; } }
