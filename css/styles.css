@@ -330,7 +330,9 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 .card__title { font-size: 20px; }
 .card__body { font-size: 18px; line-height: 1.65; max-width: 48ch; }
 .execlist__title { font-size: 24px; }
-.execlist__body { font-size: 18px; line-height: 1.65; max-width: 74ch; margin-left: 76px; } /* runs the card width, indented past the numeral (46px + 30px gap) so it sits under the title */
+.execlist { max-width: 964px; margin-inline: auto; }
+@media (min-width: 901px) { .execlist__card { padding: 48px; } } /* roomier cards; list widened to match so the text measure is unchanged */ /* cards hug their text and sit centred under the heading — no dead space on the right (Jay 2026-09-21) */
+.execlist__body { font-size: 18px; line-height: 1.65; max-width: none; margin-left: 76px; } /* runs the card width, indented past the numeral (46px + 30px gap) so it sits under the title */
 .doc-steps li { padding: 28px 0; gap: 10px; }
 .doc-steps .s-t { font-size: 20px; margin-bottom: 8px; }
 .doc-steps .s-d { font-size: 18px; line-height: 1.65; }

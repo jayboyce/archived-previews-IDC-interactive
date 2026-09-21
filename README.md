@@ -12,7 +12,7 @@ rendered output so it can be published via GitHub Pages, which requires a public
 repo on a free plan. Do not develop here — changes made here will be overwritten
 on the next publish.
 
-Built from `main` @ `46ba81b` — the 2026-09-17 two-column amends and follow-ups.
+Built from `main` @ `dc62150` — the 2026-09-21 exec-summary card, column-split and Conclusion-merge amends.
 
 ## What is included
 
