@@ -28,8 +28,8 @@
 <!-- Styles: fonts first (the one place font sources live), then tokens, then components. -->
 <link rel="stylesheet" href="css/fonts.css"/>
 <link rel="stylesheet" href="css/tokens.css"/>
-<link rel="stylesheet" href="css/forma-webdoc.css?v=19"/>
-<link rel="stylesheet" href="css/styles.css?v=88"/>
+<link rel="stylesheet" href="css/forma-webdoc.css?v=20"/>
+<link rel="stylesheet" href="css/styles.css?v=93"/>
 </head>
 <body data-paper="dark">
 <canvas id="glowfx" aria-hidden="true"></canvas>
@@ -154,32 +154,45 @@
 <div class="webdoc" data-paper="dark">
   <div class="doc-progress"></div>
 
-  <aside class="doc-rail" aria-label="Document navigation">
+  <nav class="doc-rail" aria-label="Document navigation">
     <button type="button" class="doc-rail__select" aria-expanded="false" aria-controls="chapterList"><span class="doc-rail__select-label">Select a chapter</span><svg class="doc-rail__select-caret" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>
     <div class="doc-rail__eyebrow">Contents</div>
     <div class="doc-rail__list" id="chapterList">
-      <button type="button" class="navrow" data-target="exec"><span class="navrow__dot"></span>Executive summary</button>
-      <button type="button" class="navrow" data-target="market"><span class="navrow__dot"></span>Market / technology context</button>
-      <button type="button" class="navrow" data-target="why"><span class="navrow__dot"></span>Why this is emerging now</button>
-      <button type="button" class="navrow" data-target="reality"><span class="navrow__dot"></span>Emerging market reality</button>
-      <button type="button" class="navrow" data-target="stack"><span class="navrow__dot"></span>The finance AI trust stack</button>
-      <button type="button" class="navrow" data-target="industry"><span class="navrow__dot"></span>Industry trust dynamics</button>
-      <button type="button" class="navrow" data-target="insights"><span class="navrow__dot"></span>Key insights</button>
-      <button type="button" class="navrow" data-target="impact"><span class="navrow__dot"></span>Business impact</button>
-      <button type="button" class="navrow" data-target="architecture"><span class="navrow__dot"></span>The emerging architecture</button>
-      <button type="button" class="navrow" data-target="recommend"><span class="navrow__dot"></span>Recommendations</button>
-      <button type="button" class="navrow" data-target="roi"><span class="navrow__dot"></span>Quantifying the verification tax</button>
-      <button type="button" class="navrow" data-target="conclusion"><span class="navrow__dot"></span>Conclusion</button>
-      <button type="button" class="navrow" data-target="about"><span class="navrow__dot"></span>About this research</button>
-      <div class="doc-rail__actions">
-        <a class="rail-action rail-action--tertiary" id="downloadPdf" href="downloads/idc-sage-ai-in-finance.pdf" download="The-Emerging-Economics-of-AI-in-Finance-IDC-Sage.pdf">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg>
-          <span>Download PDF</span>
-        </a>
-      </div>
+      <a class="navrow" href="#cover" data-target="cover"><span class="navrow__dot" aria-hidden="true"></span>Cover</a>
+      <a class="navrow" href="#exec" data-target="exec"><span class="navrow__dot" aria-hidden="true"></span>Executive summary</a>
+      <a class="navrow" href="#market" data-target="market"><span class="navrow__dot" aria-hidden="true"></span>Market / technology context</a>
+      <a class="navrow" href="#why" data-target="why"><span class="navrow__dot" aria-hidden="true"></span>Why this is emerging now</a>
+      <a class="navrow" href="#reality" data-target="reality"><span class="navrow__dot" aria-hidden="true"></span>Emerging market reality</a>
+      <a class="navrow" href="#stack" data-target="stack"><span class="navrow__dot" aria-hidden="true"></span>The finance AI trust stack</a>
+      <a class="navrow" href="#industry" data-target="industry"><span class="navrow__dot" aria-hidden="true"></span>Industry trust dynamics</a>
+      <a class="navrow" href="#insights" data-target="insights"><span class="navrow__dot" aria-hidden="true"></span>Key insights</a>
+      <a class="navrow" href="#impact" data-target="impact"><span class="navrow__dot" aria-hidden="true"></span>Business impact</a>
+      <a class="navrow" href="#architecture" data-target="architecture"><span class="navrow__dot" aria-hidden="true"></span>The emerging architecture</a>
+      <a class="navrow" href="#recommend" data-target="recommend"><span class="navrow__dot" aria-hidden="true"></span>Recommendations</a>
+      <a class="navrow" href="#roi" data-target="roi"><span class="navrow__dot" aria-hidden="true"></span>Quantifying the verification tax</a>
+      <a class="navrow" href="#conclusion" data-target="conclusion"><span class="navrow__dot" aria-hidden="true"></span>Conclusion</a>
+      <a class="navrow" href="#about" data-target="about"><span class="navrow__dot" aria-hidden="true"></span>About this research</a>
     </div>
-    <div class="doc-rail__foot">IDC · Sponsored by Sage · September 2026<br><span style="opacity:.65;">#EUR254634726-WP</span></div>
-  </aside>
+    <!-- The PDF action is NOT a chapter destination, so it sits outside
+         #chapterList: in the compact menu that list is a 72vh scroller, and
+         the action was stranded below the 13th chapter where a reader had
+         to scroll the whole menu to find it. Now it is a sibling of the
+         list, in its own labelled group, and stays put while the chapters
+         scroll. File type and size are in the link text so the target is
+         described before it is activated. (Dru's review, 2026-09-22.) -->
+    <div class="doc-rail__actions" role="group" aria-label="Document actions">
+      <a class="rail-action rail-action--tertiary" id="downloadPdf" href="downloads/idc-sage-ai-in-finance.pdf" download="The-Emerging-Economics-of-AI-in-Finance-IDC-Sage.pdf" type="application/pdf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M5 21h14"/></svg>
+        <span>Download PDF<span class="sr-only"> — PDF, 2.7 MB</span></span>
+      </a>
+      <span class="rail-action__meta" aria-hidden="true">PDF · 2.7 MB</span>
+    </div>
+    <!-- Publication metadata, not rail chrome. Contrast raised and the
+         nested opacity removed (it compounded with --pg-fg-4 to ~21% white).
+         The rail hides this below 1100px, so the same information is also
+         carried in "About this research" — see #docref. -->
+    <div class="doc-rail__foot">IDC · Sponsored by Sage · September 2026<br><span class="doc-rail__ref">#EUR254634726-WP</span></div>
+  </nav>
 
   <main class="doc-canvas" id="main" tabindex="-1" aria-label="White paper content">
 
@@ -242,7 +255,6 @@
 
     <section class="doc-section" data-chapter="exec" data-section="Executive summary">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Executive summary</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>Artificial intelligence adoption within finance organizations is accelerating rapidly, but operational reality is diverging from the market’s early expectations. Today, only 4% of finance organizations describe themselves as running largely autonomous finance operations, while 62% remain primarily manual or rules-based. Rather than enabling fully autonomous finance, most organizations are deploying AI within bounded, reviewable workflows focused on analysis, reconciliation, reporting preparation, policy review, exception identification, and operational acceleration.</p>
           <p>Across industries, finance teams are discovering that AI-generated outputs introduce new operational requirements tied to validation, explainability, governance, auditability, and accountability. Verification of those outputs now consumes a substantial share of finance-team time, with 48% of all respondents spending 15 or more hours per week on verification activities. Organizations estimate that, on average, more than a quarter (26%) of expected productivity gains are lost to reverse-engineering AI outputs so they can be explained to stakeholders, and 22% report that this consumes more than half of all AI-saved time.</p>
@@ -252,7 +264,6 @@
 
     <section class="doc-section" data-chapter="exec" data-section="Executive summary">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Executive summary</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-pair">
         <div class="doc-body reveal" style="margin-top:22px;">
           <p>As a result, organizations are building what increasingly resembles a second operational layer inside finance, focused not on generating AI outputs but on managing trust around those outputs. This shift is reflected in finance leaders’ talent priorities. When allocating 100 points across the skills required to hire a finance leader today, respondents prioritize the following:</p>
@@ -271,7 +282,6 @@
 
     <section class="doc-section" data-chapter="exec" data-section="Executive summary">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Executive summary</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>The defining question is shifting from <strong>“Can AI generate financial insight?”</strong> to <strong>“Can organizations operationalize trust efficiently enough for AI to scale?”</strong></p>
           <p>IDC research suggests the strongest company-wide AI adoption patterns are emerging in workflows that are structured, reviewable, explainable, and governed by clear operational boundaries.</p>
@@ -296,7 +306,6 @@
 
     <section class="doc-section" data-chapter="exec" data-section="Executive summary">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Executive summary</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>71% of finance leaders say a vendor’s shift from a “Trust Us” (Black Box) stance to a “See How it Works” (Glass Box) design principle would strongly or critically elevate that vendor’s status as a preferred partner. And 54% of organizations report they would pay a premium for the transparency of Glass Box AI. Across all respondents, the mean premium is 11% above standard licensing fees, which rises to approximately 21% among those willing to pay.</p>
           <p>In practice, the future competitive divide in finance AI may not emerge between organizations that adopt AI and those that do not. It may emerge between organizations capable of reducing the operational cost of trust and those overwhelmed by verification overhead.</p>
@@ -317,17 +326,17 @@
       <div class="doc-well is-wide">
         <div class="pillargrid stagger">
           <article class="card" style="--i:0;">
-            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 13l3-3M12 5V3M9 3h6"/></svg></div>
+            <div class="card__icon"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 13l3-3M12 5V3M9 3h6"/></svg></div>
             <h3 class="card__title">Speed</h3>
             <p class="card__body">Faster close cycles, real-time reporting expectations, and increased decision velocity.</p>
           </article>
           <article class="card" style="--i:1;">
-            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5"/><path d="M5 11.5v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5"/></svg></div>
+            <div class="card__icon"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5"/><path d="M5 11.5v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5"/></svg></div>
             <h3 class="card__title">Cost efficiency</h3>
             <p class="card__body">Leaner finance teams, constrained hiring environments, and growing pressure to scale without proportional headcount expansion.</p>
           </article>
           <article class="card" style="--i:2;">
-            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <div class="card__icon"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
             <h3 class="card__title">Control</h3>
             <p class="card__body">Auditability, defensibility, governance, compliance, and financial accountability remain non-negotiable.</p>
           </article>
@@ -337,7 +346,6 @@
 
     <section class="doc-section" data-chapter="market" data-section="Market / technology context">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Market / technology context</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-pair">
         <div class="doc-body reveal" style="margin-top:22px;">
           <p>AI is increasingly positioned as the mechanism to resolve these competing pressures. However, IDC research suggests AI adoption inside finance is scaling unevenly. The current baseline reveals just how early most of the market is: 32% of organizations describe their finance function as primarily manual, 30% as rules-based, 23% as AI-assisted, 11% as semi-autonomous, and only 4% as largely autonomous. The market narrative of widespread autonomous finance has not yet matched operational reality.</p>
@@ -367,7 +375,6 @@
 
     <section class="doc-section" data-chapter="market" data-section="Market / technology context">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Market / technology context</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-pair">
         <div class="doc-body reveal" style="margin-top:22px;">
           <p>Even in the hypothetical scenario of a fully reliable “continuous close” with a human-readable reasoning trace, only 23% of organizations would shift their monthly close to a review-only model, 42% would adopt a hybrid close, 28% would make no change at all (preserving the close as a governance milestone regardless of AI capability), and the remaining 7% would shift to a reduced-frequency formal close (quarterly or annual).</p>
@@ -411,7 +418,6 @@
 
     <section class="doc-section" data-chapter="why" data-section="Why this is emerging now">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Why this is emerging now</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-pair">
         <div class="doc-body reveal" style="margin-top:22px;">
           <p>At the same time, AI capabilities are advancing faster than organizational trust models. Organizations may trust AI to identify anomalies, summarize information, compare datasets, or accelerate reporting preparation, but half of them (51%) would stop and choose not to act on an AI recommendation for an important financial decision if the AI’s reasoning is not transparent. Only 10% would proceed based on proven accuracy alone.</p>
@@ -464,7 +470,6 @@
 
     <section class="doc-section" data-chapter="reality" data-section="Emerging market reality">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">The Verification Tax</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-pair">
         <div class="doc-body reveal" style="margin-top:22px;">
           <p>The cost is concrete and quantifiable at the decision level. Consider a representative scenario: an autonomous agent denies a $50,000 supplier payment, citing “risk anomalies” but providing no explanation. The downstream response from finance leaders is telling. Fewer than four in one hundred (4%) would uphold the denial without further investigation, meaning the overwhelming majority are forced into reactive, time-intensive workflows. More than a third (35%) would initiate an immediate manual review, consuming an estimated two to four hours of staff time. More than a quarter (27%) would request the AI’s reasoning trace before taking any action.</p>
@@ -554,7 +559,6 @@
 
     <section class="doc-section" data-chapter="stack" data-section="The finance AI trust stack">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">The finance AI trust stack</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>The strongest adoption patterns are emerging in workflows where organizations can review outputs quickly, validate logic consistently, maintain governance visibility, and preserve accountability boundaries clearly. This helps explain why interest in autonomous agents is strongly conditional on transparency: 93% of organizations are interested in AI agents that can “self-heal” errors (e.g., correcting vendor tax codes), but 66% require a human-in-the-loop approval step, and only 28% are willing to grant true autonomy even with Glass Box reporting.</p>
           <p>The organizations most successful with company-wide AI adoption may not necessarily be those deploying the most aggressive automation strategies. They may instead be the organizations that reduce verification burden efficiently, operationalize explainability, streamline reviewability, maintain governance clarity, and scale trust without introducing excessive operational drag.</p>
@@ -582,21 +586,25 @@
         <div class="doc-kicker reveal">Table 2</div>
         <h3 class="doc-h2 reveal" style="margin-top:14px;">Cross-industry observation</h3>
         <p class="doc-body reveal" style="margin-top:12px;">While AI adoption patterns differ significantly across industries, IDC research suggests a highly consistent underlying trend: organizations are operationalizing AI first in workflows that are structured, reviewable, explainable, and bounded by clear governance controls.</p>
-        <div class="reveal" style="margin-top:20px;overflow-x:auto;">
-          <table class="ig-table is-scroll">
-            <thead><tr><th>Industry</th><th>Primary AI Trust Requirement</th><th class="num">% “Glass Box” preferred-vendor (Top-2)</th><th class="num">Mean Transparency Premium</th></tr></thead>
+        <div class="tablescroll reveal" data-tablescroll style="margin-top:20px;">
+          <p class="tablescroll__hint" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M16 7l5 5-5 5"/><path d="M8 17l-5-5 5-5"/></svg><span class="tablescroll__verb">Scroll horizontally to see more</span></p>
+          <div class="tablescroll__view">
+            <table class="ig-table is-scroll">
+            <caption class="sr-only">Primary AI trust requirement, Glass Box preferred-vendor share and mean transparency premium, by industry.</caption>
+            <thead><tr><th scope="col">Industry</th><th scope="col">Primary AI Trust Requirement</th><th scope="col" class="num">% “Glass Box” preferred-vendor (Top-2)</th><th scope="col" class="num">Mean Transparency Premium</th></tr></thead>
             <tbody>
-              <tr><td>Nonprofit and Education</td><td>Defensibility</td><td class="num">73% / 71%</td><td class="num">28% / 33%</td></tr>
-              <tr><td>Financial Services</td><td>Regulatory accountability</td><td class="num">73%</td><td class="num">27%</td></tr>
-              <tr><td>Construction and Real Estate</td><td>Risk visibility</td><td class="num">68%</td><td class="num">37%</td></tr>
-              <tr><td>SaaS / Software &amp; Info Services</td><td>Explainable insight</td><td class="num">68%</td><td class="num">13%</td></tr>
-              <tr><td>Healthcare</td><td>Consistency at scale</td><td class="num">75%</td><td class="num">27%</td></tr>
-              <tr><td>Manufacturing and Distribution</td><td>Operational-financial linkage</td><td class="num">74%</td><td class="num">19%</td></tr>
-              <tr><td>Professional Services</td><td>Delivery-context transparency</td><td class="num">73%</td><td class="num">26%</td></tr>
-              <tr><td>Hospitality</td><td>Operational responsiveness with governance</td><td class="num">66%</td><td class="num">24%</td></tr>
-              <tr class="is-hi"><td><b>All industries</b></td><td>—</td><td class="num">71%</td><td class="num">21%</td></tr>
+              <tr><th scope="row">Nonprofit and Education</th><td>Defensibility</td><td class="num">73% / 71%</td><td class="num">28% / 33%</td></tr>
+              <tr><th scope="row">Financial Services</th><td>Regulatory accountability</td><td class="num">73%</td><td class="num">27%</td></tr>
+              <tr><th scope="row">Construction and Real Estate</th><td>Risk visibility</td><td class="num">68%</td><td class="num">37%</td></tr>
+              <tr><th scope="row">SaaS / Software &amp; Info Services</th><td>Explainable insight</td><td class="num">68%</td><td class="num">13%</td></tr>
+              <tr><th scope="row">Healthcare</th><td>Consistency at scale</td><td class="num">75%</td><td class="num">27%</td></tr>
+              <tr><th scope="row">Manufacturing and Distribution</th><td>Operational-financial linkage</td><td class="num">74%</td><td class="num">19%</td></tr>
+              <tr><th scope="row">Professional Services</th><td>Delivery-context transparency</td><td class="num">73%</td><td class="num">26%</td></tr>
+              <tr><th scope="row">Hospitality</th><td>Operational responsiveness with governance</td><td class="num">66%</td><td class="num">24%</td></tr>
+              <tr class="is-hi"><th scope="row"><b>All industries</b></th><td>—</td><td class="num">71%</td><td class="num">21%</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </section>
@@ -606,8 +614,19 @@
         <div class="doc-kicker reveal">Figure 1</div>
         <h3 class="doc-h2 reveal" style="margin-top:14px;">Glass Box demand vs. willingness to pay by industry</h3>
         <p class="doc-lede reveal" style="margin-top:10px;font-style:italic;">Industries that demand transparency most don’t always pay most for it</p>
+        <!-- The chart carries 42 loose <text> nodes (axis ticks, industry
+             labels, quadrant captions). Read in source order those are
+             meaningless, so the SVG is given a single name and description
+             via role="img" and everything inside it is hidden. The values
+             themselves are not lost: every industry's Glass Box share and
+             transparency premium is in the Cross-industry observation table
+             above, and the two findings are stated in the prose below.
+             (Dru's review, 2026-09-22.) -->
         <div class="fig-scatter reveal" id="figGlassbox" style="margin-top:22px;">
-          <svg fill="none" viewBox="0 0 560 380" style="width:100%;height:auto;display:block;" xmlns="http://www.w3.org/2000/svg">
+          <svg fill="none" viewBox="0 0 560 380" style="width:100%;height:auto;display:block;" xmlns="http://www.w3.org/2000/svg"
+               role="img" aria-labelledby="figGlassboxTitle" aria-describedby="figGlassboxDesc">
+            <title id="figGlassboxTitle">Glass Box demand versus willingness to pay, by industry</title>
+            <desc id="figGlassboxDesc">Scatter plot. The horizontal axis is Glass Box preference, from 64 to 80 percent of respondents rating transparency a strong or critical vendor factor. The vertical axis is the mean transparency premium buyers will pay, from 5 to 38 percent. Bubble size is proportional to verification load. Every industry shown sits above 65 percent on demand, while willingness to pay varies widely: Construction and Real Estate is highest at 37 percent, Education 33 percent, Nonprofit 28 percent, and Financial Services and Healthcare both 27 percent, while SaaS and Software is lowest at 13 percent. The same figures are listed in the Cross-industry observation table.</desc>
 <path d="M49.4287 10.1787V321.168" stroke="white" stroke-opacity="0.75" stroke-width="0.514884"/>
 <path d="M143.138 10.1787V320.139" stroke="white" stroke-opacity="0.25" stroke-width="0.514884"/>
 <path d="M86.5005 10.1787V319.109" stroke="white" stroke-opacity="0.25" stroke-width="0.514884"/>
@@ -766,7 +785,6 @@
 
     <section class="doc-section" data-chapter="insights" data-section="Key insights">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Insight 2 · The hidden cost of AI is validation</span><span class="doc-runhead__c">continued</span></div>
         <p class="doc-body reveal is-halfcol" style="margin-top:22px;">In a single Black Box scenario (a $50K denied payment), ~63% of organizations would incur direct verification time or operational risk; only 4% would simply uphold the AI’s decision.</p>
         <div class="card is-accent fx-cornerglow is-wide reveal" style="margin-top:28px;height:auto;">
           <div class="card__eyebrow">Strategic Implication</div>
@@ -799,7 +817,6 @@
 
     <section class="doc-section" data-chapter="insights" data-section="Key insights">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Insight 3 · Trust architecture is emerging as a competitive differentiator</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-pair">
         <p class="doc-body reveal" style="margin-top:22px;">When asked specifically why Glass Box matters, the top four reasons were, in order: reducing regulatory, audit, and compliance risk (46%); increasing trust for high-risk finance decisions (30%); lowering validation cost (27%); and improving the ability to explain AI decisions to leadership (24%).</p>
             <div class="card is-accent fx-cornerglow reveal">
@@ -825,7 +842,6 @@
 
     <section class="doc-section" data-chapter="impact" data-section="Business impact">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Business impact</span><span class="doc-runhead__c">continued</span></div>
         <h3 class="doc-h2 reveal" style="margin-top:14px;">Finance is becoming the enterprise trust layer</h3>
         <div class="doc-pair">
         <div class="doc-body reveal" style="margin-top:22px;">
@@ -916,7 +932,6 @@
 
     <section class="doc-section" data-chapter="architecture" data-section="The emerging architecture">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="card__icon is-numeral">1</span><span class="doc-runhead__t">Generic AI capability is no longer sufficient</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>The failure modes cluster in predictable ways. Hallucinations in financial outputs are not merely inaccuracies; they are governance events. A fabricated variance explanation or an unsourced forecast assumption requires investigation, documentation, and escalation. The cost of a single confident AI error in a finance context routinely exceeds the efficiency gain from dozens of correct outputs. Lack of explainability compounds this: when an AI system cannot surface its reasoning, the human-in-the-loop cannot quickly distinguish a correct output from an incorrect one, so every output is treated as suspect until proven otherwise.</p>
           <p>Disconnected outputs, those produced without integration into the workflow context in which they will be used, create handoff friction that reconstructs the manual effort the AI was meant to eliminate. And the inability to defend decisions to auditors, boards, or regulators means that AI-assisted conclusions carry a persistent asterisk: useful internally, but not authoritative externally.</p>
@@ -953,7 +968,6 @@
 
     <section class="doc-section" data-chapter="architecture" data-section="The emerging architecture">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="card__icon is-numeral">2</span><span class="doc-runhead__t">Workflow context is becoming the core differentiator</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>Policy-aware AI, systems that understand the organization’s accounting policies, approval thresholds, materiality standards, and governance rules, and that apply them consistently without requiring manual re-verification, represents one of the most significant near-term value drivers in finance AI. When an AI recommendation is already calibrated to internal policy, the verification burden shifts from checking whether the output is compliant to confirming that it is, a far lighter lift. Similarly, workflow-connected AI, systems embedded in the close process, the budgeting cycle, the reporting workflow rather than sitting adjacent to it, eliminates the translation layer between AI output and operational action.</p>
           <p>Audit-ready AI carries the same logic forward. 65% of finance leaders cite a clear audit trail as a top confidence driver, not because they want to admire the documentation, but because audit-ready outputs are the only outputs that complete the workflow end to end. An AI recommendation that requires a separate documentation step before it can be submitted to an auditor has not finished the job. One that arrives with its audit trail built in has.</p>
@@ -981,7 +995,6 @@
 
     <section class="doc-section" data-chapter="architecture" data-section="The emerging architecture">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="card__icon is-numeral">3</span><span class="doc-runhead__t">Trust infrastructure is becoming strategic infrastructure</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>Organizations that treat trust infrastructure as strategic infrastructure make a different set of investments. They build explainability into AI outputs at the point of generation, not as a post-hoc documentation layer. They establish traceability as a system requirement, not a manual step. They design validation workflows that are fast and lightweight precisely because the AI system has done the work of making its reasoning visible.</p>
           <p>And they build accountability mechanisms that allow AI-assisted decisions to be reviewed, challenged, and defended without requiring the human reviewer to reconstruct the AI’s reasoning from scratch.</p>
@@ -1010,7 +1023,6 @@
 
     <section class="doc-section" data-chapter="architecture" data-section="The emerging architecture">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="card__icon is-numeral">4</span><span class="doc-runhead__t">Finance teams are becoming AI supervisors</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>The implications for finance teams are significant and largely unaddressed. The skills most valued in AI supervisors, the ability to detect reasoning errors in AI outputs, to interrogate assumptions, to identify when an AI system is operating outside its reliable range, and to translate AI-generated intelligence into defensible human decisions, are not the skills finance teams have historically recruited or developed for. They are also not the skills that most AI platforms are designed to support.</p>
           <p>Platforms that surface their reasoning clearly, that flag uncertainty explicitly, and that present outputs in a form that makes human oversight efficient rather than burdensome are not just more trusted. They are operationally better suited to the finance function as it is actually evolving.</p>
@@ -1034,7 +1046,6 @@
 
     <section class="doc-section" data-chapter="architecture" data-section="The emerging architecture">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="card__icon is-numeral">5</span><span class="doc-runhead__t">The organizations that trust most will move fastest</span><span class="doc-runhead__c">continued</span></div>
         <div class="doc-body cols-2 reveal" style="margin-top:22px;">
           <p>The competitive implication for the next phase of finance AI is direct. The organizations that will lead are not those deploying the smartest models or the most autonomous agents. They are those building the trust architecture that allows smart models to be deployed safely at scale. The winning AI systems in finance over the next three to five years will not be defined by raw capability. They will be defined by governability: the degree to which human finance professionals can understand, verify, challenge, and ultimately rely on what the AI has produced.</p>
           <p>IDC research offers a clear leading indicator of which organizations are on that path. The finance leaders who have already built verification into operational workflows, who have established trust infrastructure rather than treating governance as friction, and who have begun designing their teams around the AI supervisor role, are not moving more slowly than their peers. They are moving more sustainably. In a market where AI capability is rapidly commoditizing, the durable differentiator is not what an organization’s AI can do. It is what the organization has built to govern what its AI does.</p>
@@ -1058,7 +1069,6 @@
 
     <section class="doc-section" data-chapter="recommend" data-section="Recommendations">
       <div class="doc-well is-wide">
-        <div class="doc-runhead reveal"><span class="doc-runhead__t">Recommendations</span><span class="doc-runhead__c">continued</span></div>
         <ol class="doc-steps reveal" style="margin-top:22px;">
           <li><span class="s-n">4</span><div><div class="s-t">Prioritize bounded autonomy before full autonomy</div><div class="s-d">Organizations should initially focus AI deployment on workflows that are structured, repeatable, measurable, and operationally reviewable. The market consensus already points here: only 9% of organizations plan to pursue broad (“lights-out”) autonomy in transactional finance over the next two years, while 67% plan pilots or scoped automation. Even with cross-agent orchestration, 43% want autonomous data-sharing between agents only with mandatory human checkpoints.</div></div></li>
           <li><span class="s-n">5</span><div><div class="s-t">Treat explainability as an economic multiplier</div><div class="s-d">Organizations that improve explainability may reduce validation burden, operational hesitation, debugging effort, and governance friction. The market is signaling willingness to pay: 54% would pay a transparency premium; across all respondents the mean is 11% (21% among those willing to pay), with willing-payer peaks of 37% in Construction and 27% in Financial Services. And 59% of organizations say 100% Glass Box visibility would meaningfully expand their appetite for autonomous AI execution, meaning explainability is the lever that unlocks the rest of the AI roadmap.</div></div></li>
@@ -1090,25 +1100,33 @@
             <p>These figures represent the floor of the verification burden, not the ceiling. They capture only the time cost of senior finance leaders and do not account for the productivity costs of junior staff, external auditor time, delayed decisions, or the opportunity cost of strategic work displaced by verification.</p>
           </div>
         </div><!-- /doc-pair -->
+        <!-- Calculator. Visible <label for> rather than aria-label, so the
+             accessible name matches the words on screen (voice control can
+             then address each slider by what the reader sees). The basis
+             note is tied to all three inputs with aria-describedby, and the
+             results are a polite live region announced on change. -->
         <div class="ig-calc reveal" data-calc style="margin-top:34px;">
           <div class="ig-calc__inputs">
             <div class="ig-calc__field">
-              <div class="ig-calc__k">Senior finance leaders <b data-calc-bind="leaders" data-calc-fmt=",0"></b></div>
-              <input type="range" data-calc-var="leaders" min="1" max="20" step="1" value="5" aria-label="Number of senior finance leaders">
+              <label class="ig-calc__k" for="calcLeaders">Senior finance leaders <b data-calc-bind="leaders" data-calc-fmt=",0"></b></label>
+              <input type="range" id="calcLeaders" data-calc-var="leaders" min="1" max="20" step="1" value="5" aria-describedby="calcBasis">
             </div>
             <div class="ig-calc__field">
-              <div class="ig-calc__k">Hours / week validating AI <b data-calc-bind="hours" data-calc-fmt="0.0"></b></div>
-              <input type="range" data-calc-var="hours" min="0" max="40" step="0.1" value="13" aria-label="Hours per week validating AI outputs">
+              <label class="ig-calc__k" for="calcHours">Hours / week validating AI <b data-calc-bind="hours" data-calc-fmt="0.0"></b></label>
+              <input type="range" id="calcHours" data-calc-var="hours" min="0" max="40" step="0.1" value="13" aria-describedby="calcBasis">
             </div>
             <div class="ig-calc__field">
-              <div class="ig-calc__k">All-in hourly cost <b data-calc-bind="cost" data-calc-fmt="$,0"></b></div>
-              <input type="range" data-calc-var="cost" min="50" max="300" step="5" value="120" aria-label="All-in hourly cost in dollars per hour">
+              <label class="ig-calc__k" for="calcCost">All-in hourly cost <b data-calc-bind="cost" data-calc-fmt="$,0"></b></label>
+              <input type="range" id="calcCost" data-calc-var="cost" min="50" max="300" step="5" value="120" aria-describedby="calcBasis">
             </div>
-            <p class="m-caption" style="margin-top:4px;">Basis: hours/week × hourly cost × 50 working weeks × leaders. Defaults reproduce the paper’s worked example ($390,000 at 5 leaders).</p>
+            <p class="m-caption" id="calcBasis" style="margin-top:4px;">Basis: hours/week × hourly cost × 50 working weeks × leaders. Defaults reproduce the paper’s worked example ($390,000 at 5 leaders).</p>
           </div>
           <div class="ig-calc__out">
-            <div class="ig-calc__row"><div class="ig-calc__rk">Weekly verification cost</div><div class="ig-calc__rv" data-calc-out="leaders*hours*cost" data-calc-fmt="$,0"></div></div>
-            <div class="ig-calc__row ig-calc__row--total"><div class="ig-calc__rk">Estimated annual verification cost</div><div class="ig-calc__rv" data-calc-out="leaders*hours*cost*50" data-calc-fmt="$,0"></div></div>
+            <div class="ig-calc__row"><div class="ig-calc__rk" id="calcWeeklyLbl">Weekly verification cost</div><div class="ig-calc__rv" data-calc-out="leaders*hours*cost" data-calc-fmt="$,0" aria-labelledby="calcWeeklyLbl"></div></div>
+            <div class="ig-calc__row ig-calc__row--total"><div class="ig-calc__rk" id="calcAnnualLbl">Estimated annual verification cost</div><div class="ig-calc__rv" data-calc-out="leaders*hours*cost*50" data-calc-fmt="$,0" aria-labelledby="calcAnnualLbl"></div></div>
+            <!-- Announced on change, not on every input tick: dragging a
+                 slider would otherwise emit a result per pixel. -->
+            <p class="sr-only" role="status" data-calc-announce></p>
           </div>
         </div>
       </div>
@@ -1184,15 +1202,19 @@
       <div class="doc-well is-wide">
         <div class="doc-kicker reveal">Table 3</div>
         <h3 class="doc-h2 reveal" style="margin-top:14px;">Core cost components across three organizational profiles</h3>
-        <div class="reveal" style="margin-top:20px;overflow-x:auto;">
-          <table class="ig-table is-scroll">
-            <thead><tr><th>Organization profile</th><th class="num">Annual verification cost (senior leaders)</th><th class="num">Productivity erosion (26% of AI gains)</th><th class="num">Gross savings from Glass Box (40% reduction)</th><th class="num">Premium cost (21% on licensing)</th><th class="num">Net ROI improvement</th></tr></thead>
+        <div class="tablescroll reveal" data-tablescroll style="margin-top:20px;">
+          <p class="tablescroll__hint" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M16 7l5 5-5 5"/><path d="M8 17l-5-5 5-5"/></svg><span class="tablescroll__verb">Scroll horizontally to see more</span></p>
+          <div class="tablescroll__view">
+            <table class="ig-table is-scroll">
+            <caption class="sr-only">Annual verification cost, productivity erosion, gross Glass Box savings, premium cost and net ROI improvement, for three organization profiles.</caption>
+            <thead><tr><th scope="col">Organization profile</th><th scope="col" class="num">Annual verification cost (senior leaders)</th><th scope="col" class="num">Productivity erosion (26% of AI gains)</th><th scope="col" class="num">Gross savings from Glass Box (40% reduction)</th><th scope="col" class="num">Premium cost (21% on licensing)</th><th scope="col" class="num">Net ROI improvement</th></tr></thead>
             <tbody>
-              <tr><td>Small team (3 senior leaders)</td><td class="num">$234,000</td><td class="num">~$52,000 lost on $200K AI savings target</td><td class="num">$93,600</td><td class="num">$25,200 ($120K license)</td><td class="num"><b>$68,400</b></td></tr>
-              <tr><td>Mid-size team (5 senior leaders)</td><td class="num">$390,000</td><td class="num">~$86,667 lost on $333K AI savings target</td><td class="num">$156,000</td><td class="num">$42,000 ($200K license)</td><td class="num"><b>$114,000</b></td></tr>
-              <tr><td>Enterprise team (10 senior leaders)</td><td class="num">$780,000</td><td class="num">~$173,420 lost on $667K AI savings target</td><td class="num">$312,000</td><td class="num">$84,000 ($400K license)</td><td class="num"><b>$228,000</b></td></tr>
+              <tr><th scope="row">Small team (3 senior leaders)</th><td class="num">$234,000</td><td class="num">~$52,000 lost on $200K AI savings target</td><td class="num">$93,600</td><td class="num">$25,200 ($120K license)</td><td class="num"><b>$68,400</b></td></tr>
+              <tr><th scope="row">Mid-size team (5 senior leaders)</th><td class="num">$390,000</td><td class="num">~$86,667 lost on $333K AI savings target</td><td class="num">$156,000</td><td class="num">$42,000 ($200K license)</td><td class="num"><b>$114,000</b></td></tr>
+              <tr><th scope="row">Enterprise team (10 senior leaders)</th><td class="num">$780,000</td><td class="num">~$173,420 lost on $667K AI savings target</td><td class="num">$312,000</td><td class="num">$84,000 ($400K license)</td><td class="num"><b>$228,000</b></td></tr>
             </tbody>
           </table>
+          </div>
         </div>
         <p class="m-caption reveal" style="margin-top:16px;font-size:15px;line-height:1.6;max-width:none;">Note: Verification cost assumes $250,000 all-in annual compensation, 50 working weeks, and 13 hours per week on verification. Productivity erosion modeled at 26% of AI-saved time. Glass Box benefit modeled as a 40% reduction in verification burden, a conservative estimate based on IDC research findings. Individual results will vary based on team size, compensation levels, AI implementation scope, and organizational workflow design.</p>
       </div>
@@ -1228,16 +1250,20 @@
       <div class="doc-well is-wide">
         <p class="doc-body reveal">This IDC White Paper is based on an Agentic AI Finance Survey conducted with Sage in February 2026 (n=2,275 senior finance decision-makers and influencers via CAVI phone interview), combined with executive interviews, enterprise finance practitioner discussions, and ongoing IDC market analysis.</p>
         <h3 class="doc-h2 reveal" style="margin-top:28px;">Sample composition</h3>
-        <div class="reveal" style="margin-top:16px;overflow-x:auto;">
-          <table class="ig-table">
+        <div class="tablescroll reveal" data-tablescroll style="margin-top:16px;">
+          <p class="tablescroll__hint" aria-hidden="true"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M16 7l5 5-5 5"/><path d="M8 17l-5-5 5-5"/></svg><span class="tablescroll__verb">Scroll horizontally to see more</span></p>
+          <div class="tablescroll__view">
+            <table class="ig-table">
+            <caption class="sr-only">Sample composition of the February 2026 Agentic AI Finance Survey.</caption>
             <tbody>
-              <tr><td style="width:200px;"><b>Region</b></td><td>North America 46% (US 37%, Canada 9%), EMEA 54% (UK 18%, France/Germany/Spain/South Africa 9% each)</td></tr>
-              <tr><td><b>Company size</b></td><td>20–1,999 employees (100–249: 32%; 250–499: 33%; 50–99: 16%; 20–49: 16%; 500–999: 1%; 1,000–1,999: 1%)</td></tr>
-              <tr><td><b>Industries</b></td><td>All 17 IDC verticals represented, with strongest coverage in Financial Services (8%), Software &amp; Information Services (8%), Nonprofit (8%), Business &amp; Personal Services (8%), Construction (8%), Healthcare (7%), Hospitality (7%), and Manufacturing/Wholesale &amp; Distribution (combined 8%)</td></tr>
-              <tr><td><b>Roles</b></td><td>Finance/Accounting Directors (21%), Controllers (16%), Finance/Accounting Managers (14%), VP/Head of Finance (14%), CFOs (13%), VP/Head of FP&amp;A (11%), and senior operations roles</td></tr>
-              <tr><td><b>Decision authority</b></td><td>36% primary decision-makers, 52% members of the decision-making team, 12% influencers</td></tr>
+              <tr><th scope="row" style="width:200px;">Region</th><td>North America 46% (US 37%, Canada 9%), EMEA 54% (UK 18%, France/Germany/Spain/South Africa 9% each)</td></tr>
+              <tr><th scope="row">Company size</th><td>20–1,999 employees (100–249: 32%; 250–499: 33%; 50–99: 16%; 20–49: 16%; 500–999: 1%; 1,000–1,999: 1%)</td></tr>
+              <tr><th scope="row">Industries</th><td>All 17 IDC verticals represented, with strongest coverage in Financial Services (8%), Software &amp; Information Services (8%), Nonprofit (8%), Business &amp; Personal Services (8%), Construction (8%), Healthcare (7%), Hospitality (7%), and Manufacturing/Wholesale &amp; Distribution (combined 8%)</td></tr>
+              <tr><th scope="row">Roles</th><td>Finance/Accounting Directors (21%), Controllers (16%), Finance/Accounting Managers (14%), VP/Head of Finance (14%), CFOs (13%), VP/Head of FP&amp;A (11%), and senior operations roles</td></tr>
+              <tr><th scope="row">Decision authority</th><td>36% primary decision-makers, 52% members of the decision-making team, 12% influencers</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
         <div class="doc-body cols-2 reveal" style="margin-top:20px;">
           <p>The study examined enterprise AI adoption patterns, validation and governance challenges, explainability expectations, operational trust dynamics, and the evolving role of finance in enterprise AI oversight.</p>
@@ -1271,6 +1297,11 @@
           <p>IDC Custom Solutions produced this publication. The opinion, analysis, and research results presented herein are drawn from more detailed research and analysis that IDC independently conducted and published, unless specific vendor sponsorship is noted. IDC Custom Solutions makes IDC content available in a wide range of formats for distribution by various companies.</p>
           <p>This IDC material is licensed for external use and in no way does the use or publication of IDC research indicate IDC’s endorsement of the sponsor’s or licensee’s products or strategies.</p>
           <p>©2026 IDC. Reproduction is forbidden unless authorized. All rights reserved.</p>
+          <!-- Publication metadata in the document body. The rail footer
+               carries the same line but is hidden below 1100px, so this is
+               where the document reference is actually guaranteed to be
+               available at every viewport. (Dru's review, 2026-09-22.) -->
+          <p id="docref" class="doc-docref">IDC White Paper, sponsored by Sage · September 2026 · Document&nbsp;#EUR254634726-WP</p>
         </div>
       </div>
     </section>
@@ -1278,7 +1309,7 @@
   </main>
 </div>
 
-<script src="js/forma-webdoc.js?v=3" defer></script>
+<script src="js/forma-webdoc.js?v=6" defer></script>
 <script>
 /* Chapter-aware scroll-spy: the Forma module keys nav highlighting off
    .doc-section[id], but each chapter here spans several sections (only the

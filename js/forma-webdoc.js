@@ -45,7 +45,23 @@
     if (doc.__wdInit) return;
     doc.__wdInit = true;
 
-    /* ── reveals + chart animate-in via IntersectionObserver ──────── */
+    /* ── reveals + chart animate-in via IntersectionObserver ────────
+       PROGRESSIVE ENHANCEMENT (Dru's review, 2026-09-22): the hidden
+       pre-animation states are scoped under html.reveal-ready in CSS.
+       We add that class ONLY here, once IntersectionObserver is known to
+       exist and the observer has been constructed without throwing. If
+       JS is blocked, errors earlier, or the observer is unavailable, the
+       class never lands and every .reveal / chart renders at its final
+       visible value. Never move this above the feature test. */
+    if (!('IntersectionObserver' in window) || REDUCED) {
+      doc.querySelectorAll('.reveal, .stagger, [data-ig]').forEach(function (el) {
+        el.classList.add('in');
+      });
+      setupChrome(doc);      // nav, calculators, focus management still run
+      return;
+    }
+    document.documentElement.classList.add('reveal-ready');
+
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (e.isIntersecting) {
@@ -133,7 +149,22 @@
       }
       return p.prefix + s + p.suffix;
     }
+    /* The count-up is decoration over a published figure, so the
+       accessibility tree must always carry the FINAL value — never an
+       intermediate frame. The element is given aria-hidden plus a visually
+       hidden sibling holding the real number, so assistive tech and
+       automated extraction read "71%" even mid-animation, while sighted
+       readers still see it count. (Dru's review, 2026-09-22.) */
     function countTo(el, p, dur) {
+      if (el.__counted) return;
+      el.__counted = true;
+
+      var real = document.createElement('span');
+      real.className = 'sr-only';
+      real.textContent = p.raw;
+      el.setAttribute('aria-hidden', 'true');
+      if (el.parentNode) el.parentNode.insertBefore(real, el.nextSibling);
+
       el.style.fontVariantNumeric = 'tabular-nums';   // steady width while counting
       var start = null;
       function step(ts) {
@@ -141,7 +172,13 @@
         var t = Math.min(1, (ts - start) / dur);
         el.textContent = fmtNum(p.value * easeOutCubic(t), p);
         if (t < 1) requestAnimationFrame(step);
-        else el.textContent = p.raw;                  // exact original text
+        else {
+          el.textContent = p.raw;                     // exact original text
+          /* Animation over: hand the number back to the accessibility tree
+             and drop the duplicate, so the DOM ends as it started. */
+          el.removeAttribute('aria-hidden');
+          if (real.parentNode) real.parentNode.removeChild(real);
+        }
       }
       el.textContent = fmtNum(0, p);
       requestAnimationFrame(step);
@@ -162,37 +199,128 @@
       });
     }
 
+    setupChrome(doc);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     Everything that is NOT an entrance animation: navigation, progress,
+     calculators, flip cards, sliders. Split out of setupDoc so it still
+     runs when reveals are skipped (no IntersectionObserver, or reduced
+     motion). Navigation and controls must never depend on the animation
+     layer initialising. (Dru's review, 2026-09-22.)
+     ═══════════════════════════════════════════════════════════════ */
+  function setupChrome(doc) {
     /* ── scroll-spy nav + progress + scroll-reactive glow ─────────── */
-    var sections = Array.prototype.slice.call(doc.querySelectorAll('.doc-section[id]'));
+    /* Scroll-spy tracks EVERY section, not only the 14 that carry an id.
+       A chapter's id sits on its first page, and each page is about one
+       viewport tall — so between one chapter opener and the next, no
+       id-bearing section satisfied the "is it in the band" test and the
+       rail simply went blank (as did the progress bar, same handler).
+       Each section already declares its chapter via data-chapter, so use
+       that for the highlight and keep the id only for the scroll target. */
+    var sections = Array.prototype.slice.call(doc.querySelectorAll('.doc-section')).map(function (el) {
+      return { el: el, target: el.getAttribute('data-chapter') || el.id };
+    }).filter(function (s) { return s.target; });
     var rows = {};
+    var rail = doc.querySelector('.doc-rail');
+    var selectBtn = doc.querySelector('.doc-rail__select');
+    var selectLabel = doc.querySelector('.doc-rail__select-label');
+
+    /* Is the rail currently the compact dropdown? Matches the CSS
+       boundary in forma-webdoc.css — keep the two in step. */
+    function isCompact() {
+      return window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
+    }
+
+    function closeChapterMenu(returnFocus) {
+      if (!rail) return;
+      var wasOpen = rail.classList.contains('is-open');
+      rail.classList.remove('is-open');
+      if (selectBtn) selectBtn.setAttribute('aria-expanded', 'false');
+      /* Focus would otherwise be left on an element the CSS is about to
+         set to display:none, which drops it to <body>. (Dru, 2026-09-22.) */
+      if (wasOpen && returnFocus && selectBtn) selectBtn.focus();
+    }
+
+    /* Move focus to the chapter the reader just chose, so the next Tab
+       continues from the destination rather than the top of the page.
+       tabindex="-1" makes the heading programmatically focusable without
+       adding it to the tab sequence; it is removed again on blur so the
+       document is left as it was found. */
+    function focusTarget(t) {
+      if (!t) return;
+      var h = t.querySelector('h1, h2, h3, .doc-display, .doc-h2') || t;
+      if (!h.hasAttribute('tabindex')) {
+        h.setAttribute('tabindex', '-1');
+        h.addEventListener('blur', function once() {
+          h.removeAttribute('tabindex');
+          h.removeEventListener('blur', once);
+        });
+      }
+      h.focus({ preventScroll: true });
+    }
+
     doc.querySelectorAll('.navrow[data-target]').forEach(function (r) {
       rows[r.getAttribute('data-target')] = r;
       r.addEventListener('click', function (ev) {
         var t = doc.querySelector('#' + CSS.escape(r.getAttribute('data-target')));
-        if (t) { ev.preventDefault(); t.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
+        if (!t) return;                         // no target → let the href do its job
+        /* Modified clicks (new tab/window) and the middle button belong to
+           the browser now that these are real links. */
+        if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button !== 0) return;
+        ev.preventDefault();
+        var compact = isCompact();
+        closeChapterMenu(false);
+        t.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+        setActive(t.id);
+        /* In the compact menu the list is about to be hidden, so focus must
+           move now. On desktop the rail stays put and the reader keeps their
+           place in it, so only move focus when the menu was the entry point. */
+        if (compact) focusTarget(t);
       });
     });
+
     /* mobile/tablet "Select a chapter" dropdown */
-    var rail = doc.querySelector('.doc-rail');
-    var selectBtn = doc.querySelector('.doc-rail__select');
-    var selectLabel = doc.querySelector('.doc-rail__select-label');
-    function closeChapterMenu() {
-      if (rail) rail.classList.remove('is-open');
-      if (selectBtn) selectBtn.setAttribute('aria-expanded', 'false');
-    }
     if (selectBtn && rail) {
       selectBtn.addEventListener('click', function (ev) {
         ev.stopPropagation();
         var open = rail.classList.toggle('is-open');
         selectBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      doc.querySelectorAll('.navrow[data-target]').forEach(function (r) {
-        r.addEventListener('click', closeChapterMenu);
+        /* Opening: put focus on the current chapter (or the first), so a
+           keyboard or screen-reader user lands inside the choices instead
+           of having to tab past the trigger to find them. */
+        if (open) {
+          var list = doc.querySelector('.doc-rail__list');
+          var current = list && (list.querySelector('.navrow[aria-current]') || list.querySelector('.navrow'));
+          if (current) current.focus();
+        }
       });
       document.addEventListener('click', function (ev) {
-        if (rail.classList.contains('is-open') && !rail.contains(ev.target)) closeChapterMenu();
+        if (rail.classList.contains('is-open') && !rail.contains(ev.target)) closeChapterMenu(false);
       });
-      document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeChapterMenu(); });
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'Escape') return;
+        if (!rail.classList.contains('is-open')) return;
+        ev.preventDefault();
+        closeChapterMenu(true);                  // Escape returns focus to the trigger
+      });
+    }
+
+    /* Single source of truth for the active chapter — visible state, the
+       compact menu's label and aria-current are set together here and
+       nowhere else, so they cannot disagree. (Dru, 2026-09-22: there were
+       two scripts updating this independently.) */
+    var activeId = null;
+    function setActive(id) {
+      if (id === activeId) return;
+      activeId = id;
+      for (var k in rows) {
+        var on = (k === id);
+        rows[k].classList.toggle('is-active', on);
+        if (on) rows[k].setAttribute('aria-current', 'location');
+        else rows[k].removeAttribute('aria-current');
+      }
+      if (selectLabel && rows[id]) selectLabel.textContent = rows[id].textContent.trim();
     }
 
     var progress = doc.querySelector('.doc-progress');
@@ -213,17 +341,23 @@
           progress.style.width = Math.max(0, Math.min(1, p)) * 100 + '%';
         }
 
-        /* active section (scroll-spy) */
+        /* active section (scroll-spy). Nearest section to the reading line,
+           with a fallback to whichever one the line is inside — between two
+           sections the band test alone can match nothing. */
         var active = null, best = Infinity;
         sections.forEach(function (s) {
-          var r = s.getBoundingClientRect();
+          var r = s.el.getBoundingClientRect();
           var d = Math.abs(r.top - vh * 0.32);
           if (r.top < vh * 0.6 && r.bottom > vh * 0.3 && d < best) { best = d; active = s; }
         });
-        if (active) {
-          for (var id in rows) rows[id].classList.toggle('is-active', id === active.id);
-          if (selectLabel && rows[active.id]) selectLabel.textContent = rows[active.id].textContent.trim();
+        if (!active) {
+          var line = vh * 0.32;
+          for (var i = 0; i < sections.length; i++) {
+            var rr = sections[i].el.getBoundingClientRect();
+            if (rr.top <= line && rr.bottom >= line) { active = sections[i]; break; }
+          }
         }
+        if (active) setActive(active.target);   // one writer — see setActive above
 
         /* scroll-reactive glow: --gp 0→1 as section crosses viewport, --gi peaks at centre */
         if (!REDUCED) {
@@ -291,6 +425,37 @@
         });
       }
       inputs.forEach(function (inp) { inp.addEventListener('input', recompute); });
+
+      /* Announce the result to screen readers on `change` (pointer released,
+         or arrow-key settled) rather than on every `input` tick — dragging a
+         slider fires input per pixel and would make the live region
+         unusable. The visible figures still update on input. */
+      var announce = calc.querySelector('[data-calc-announce]');
+      if (announce) {
+        var announceTimer = null;
+        function sayResult() {
+          clearTimeout(announceTimer);
+          announceTimer = setTimeout(function () {
+            var parts = [];
+            calc.querySelectorAll('[data-calc-out]').forEach(function (el) {
+              var lbl = el.getAttribute('aria-labelledby');
+              var lblEl = lbl && document.getElementById(lbl);
+              parts.push((lblEl ? lblEl.textContent.trim() + ': ' : '') + el.textContent.trim());
+            });
+            announce.textContent = parts.join('. ');
+          }, 120);
+        }
+        inputs.forEach(function (inp) {
+          inp.addEventListener('change', sayResult);
+          /* Arrow keys fire input+change together in most engines, but
+             Safari holds `change` until blur on range inputs — keyup keeps
+             keyboard operation announcing at the same pace as pointer use. */
+          inp.addEventListener('keyup', function (ev) {
+            if (ev.key && ev.key.indexOf('Arrow') === 0) sayResult();
+            else if (ev.key === 'Home' || ev.key === 'End' || ev.key === 'PageUp' || ev.key === 'PageDown') sayResult();
+          });
+        });
+      }
       /* preset chips: data-calc-preset="people:40,hours:12" */
       calc.querySelectorAll('[data-calc-preset]').forEach(function (chip) {
         chip.addEventListener('click', function () {
@@ -397,6 +562,63 @@
 
       update();
       window.addEventListener('resize', update);
+    });
+
+    /* ── scrollable tables: make the overflow discoverable ─────────
+       A wide table in a plain overflow-x:auto box gives no sign that more
+       columns exist, and no way for a keyboard user to scroll it. So:
+       when (and only when) the table actually overflows, show a text hint
+       plus edge fades, and make the scroller a tab stop with an accessible
+       name. When it fits, all of that is removed — a focusable region that
+       cannot scroll is a dead tab stop. (Dru's review, 2026-09-22.) */
+    doc.querySelectorAll('[data-tablescroll]').forEach(function (wrap) {
+      var view = wrap.querySelector('.tablescroll__view');
+      if (!view) return;
+      var table = view.querySelector('table');
+      var cap = table && table.querySelector('caption');
+
+      function syncEdges() {
+        var max = view.scrollWidth - view.clientWidth;
+        wrap.classList.toggle('is-atstart', view.scrollLeft <= 1);
+        wrap.classList.toggle('is-atend', view.scrollLeft >= max - 1);
+      }
+      function sync() {
+        /* 2px of slack: sub-pixel layout can report a 0.5px overflow on a
+           table that visually fits, which would strand an empty hint. */
+        var scrollable = view.scrollWidth - view.clientWidth > 2;
+        wrap.classList.toggle('is-scrollable', scrollable);
+        if (scrollable) {
+          /* The edge fades are anchored to the wrapper, which also contains
+             the hint line above the table. Offset their top by the hint's
+             height so a fade never sits over "…see more". */
+          var hint = wrap.querySelector('.tablescroll__hint');
+          if (hint) {
+            var hs = window.getComputedStyle(hint);
+            wrap.style.setProperty('--tsHintH',
+              (hint.offsetHeight + (parseFloat(hs.marginBottom) || 0)) + 'px');
+          }
+          view.setAttribute('tabindex', '0');
+          view.setAttribute('role', 'region');
+          if (!view.hasAttribute('aria-label')) {
+            view.setAttribute('aria-label',
+              (cap ? cap.textContent.trim().replace(/\.$/, '') : 'Data table') + ' (scrollable)');
+          }
+          syncEdges();
+        } else {
+          view.removeAttribute('tabindex');
+          view.removeAttribute('role');
+          view.removeAttribute('aria-label');
+          wrap.classList.remove('is-atstart', 'is-atend');
+        }
+      }
+      view.addEventListener('scroll', function () {
+        if (wrap.classList.contains('is-scrollable')) syncEdges();
+      }, { passive: true });
+      window.addEventListener('resize', sync);
+      /* Fonts landing after first paint change the table's intrinsic width,
+         so re-measure once they are ready rather than trusting first layout. */
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync).catch(function () {});
+      sync();
     });
 
     /* ── rail toggle (hamburger / off switch) ─────────────────────── */

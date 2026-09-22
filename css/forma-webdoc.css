@@ -626,9 +626,20 @@
   flex: none; transition: background .2s var(--ease-out), transform .2s var(--ease-out);
 }
 .navrow:hover { color: var(--pg-fg); transform: translateX(2px); }
-.navrow.is-active { color: var(--pg-fg); background: color-mix(in srgb, var(--pg-brand) 12%, transparent); }
-.navrow.is-active .navrow__dot { background: var(--pg-brand); transform: scale(1.5); }
-.doc-rail__foot { margin-top: auto; padding: 12px 10px 0; font-family: var(--font-text); font-size: 11px; color: var(--pg-fg-4); line-height: 1.5; }
+/* Active chapter. [aria-current="location"] is the source of truth (set by
+   web-doc.js); .is-active is kept as an alias so any existing markup or
+   styling hook keeps working. Both selectors, one appearance — the visible
+   state and the announced state cannot drift apart. */
+.navrow.is-active,
+.navrow[aria-current] { color: var(--pg-fg); background: color-mix(in srgb, var(--pg-brand) 12%, transparent); }
+.navrow.is-active .navrow__dot,
+.navrow[aria-current] .navrow__dot { background: var(--pg-brand); transform: scale(1.5); }
+/* Publication metadata, not decorative chrome. Was --pg-fg-4 (32% white)
+   at 11px = 2.76:1, with a further opacity:.65 on the document number —
+   ~21% white, 1.79:1. Now 12px at --pg-fg-3 (55%) with no nested opacity,
+   which measures 6.26:1 on the #070807 rail. (Dru's review, 2026-09-22.) */
+.doc-rail__foot { margin-top: auto; padding: 12px 10px 0; font-family: var(--font-text); font-size: 12px; color: var(--pg-fg-3); line-height: 1.55; }
+.doc-rail__ref { color: var(--pg-fg-3); }
 
 /* progress bar at the top of the canvas */
 .doc-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 40;
@@ -769,6 +780,12 @@
 .doc-body.cols-2 p { break-inside: avoid; -webkit-column-break-inside: avoid; }
 @media (max-width: 760px) {
   .doc-body.cols-2 { column-count: 1; }
+  /* A single-column container still honours `break-before: column`, so the
+     inline breaks on the exec "defining question" and "strongest adoption
+     patterns" pages (2026-09-21) opened a phantom second column off the
+     right edge — 355px of overflow at 375px. Nothing to break TO when
+     there is one column, so cancel it. (Dru's review, 2026-09-22.) */
+  .doc-body.cols-2 > * { break-before: auto !important; }
   /* drop tall vh floors so short sections don't leave big empty gaps */
   .doc-section, .doc-section.is-divider { min-height: 0; }
   .doc-section.is-hero { min-height: 78vh; }
@@ -1003,9 +1020,10 @@
 .ig-meter__top { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-text); font-size: 13px; color: var(--pg-fg-2); }
 .ig-meter__top b { font-family: var(--font-headline); font-weight: 900; font-size: 14px; color: var(--pg-fg); font-variant-numeric: tabular-nums; }
 .ig-meter__track { height: 7px; border-radius: 99px; background: rgba(128,128,128,0.16); overflow: hidden; }
-.ig-meter__track > b { display: block; height: 100%; width: 0; border-radius: 99px;
+.ig-meter__track > b { display: block; height: 100%; width: var(--v, 0%); border-radius: 99px;
   background: linear-gradient(90deg, rgba(var(--glow-1),1), rgba(var(--glow-2),1)); transition: width 1.1s var(--ease-out); }
-[data-ig].in .ig-meter__track > b { width: var(--v, 0%); }
+.reveal-ready .ig-meter__track > b { width: 0; }
+.reveal-ready [data-ig].in .ig-meter__track > b { width: var(--v, 0%); }
 
 /* ── Data / comparison table ────────────────────────────────────── */
 .ig-table { width: 100%; border-collapse: collapse; font-family: var(--font-text); font-size: 13px; color: var(--pg-fg-2); }
@@ -1159,19 +1177,41 @@
 /* ─────────────────────────────────────────────────────────────────
    EXPRESSIVE REVEAL + MICRO-INTERACTIONS
    ───────────────────────────────────────────────────────────────── */
-.reveal { opacity: 0; transform: translateY(20px) scale(.985);
-  transition: opacity 1s var(--ease-out), transform 1.05s var(--ease-out); will-change: opacity, transform; }
-.reveal.in { opacity: 1; transform: none; }
-.reveal.spin { transform: translateY(20px) rotate(-6deg) scale(.9); transform-origin: left center; }
-.reveal.spin.in { transform: none; }
-.reveal.from-right { transform: translateX(34px); }
-.reveal.from-right.in { transform: none; }
-.reveal.from-left { transform: translateX(-34px); }
-.reveal.from-left.in { transform: none; }
+/* PROGRESSIVE ENHANCEMENT — visible is the default state.
+   ───────────────────────────────────────────────────────────────────
+   Dru's review (2026-09-22): headings, prose and interactive controls
+   started at opacity:0 in plain CSS and only became visible once JS and
+   IntersectionObserver had both run. Blocked JS, a script error before
+   init, or a missing observer left the document blank — and a
+   keyboard user could focus a calculator slider that was invisible.
+
+   Now the hidden start frame is scoped under `.reveal-ready`, which
+   web-doc.js adds to <html> ONLY after it has confirmed it can drive the
+   reveals. No JS, an early throw, or no IntersectionObserver → the class
+   is never added and everything renders as ordinary visible content.
+   Never write a `.reveal` rule that hides something outside this scope. */
+.reveal-ready .reveal { opacity: 0; transform: translateY(20px) scale(.985);
+  will-change: opacity, transform; }
+.reveal { transition: opacity 1s var(--ease-out), transform 1.05s var(--ease-out); }
+.reveal-ready .reveal.in { opacity: 1; transform: none; }
+.reveal-ready .reveal.spin { transform: translateY(20px) rotate(-6deg) scale(.9); transform-origin: left center; }
+.reveal-ready .reveal.spin.in { transform: none; }
+.reveal-ready .reveal.from-right { transform: translateX(34px); }
+.reveal-ready .reveal.from-right.in { transform: none; }
+.reveal-ready .reveal.from-left { transform: translateX(-34px); }
+.reveal-ready .reveal.from-left.in { transform: none; }
 /* staggered children: set --i on each child */
-.stagger > * { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease-out), transform .75s var(--ease-out);
+.stagger > * { transition: opacity .7s var(--ease-out), transform .75s var(--ease-out);
   transition-delay: calc(var(--i, 0) * 90ms); }
-.stagger.in > * { opacity: 1; transform: none; }
+.reveal-ready .stagger > * { opacity: 0; transform: translateY(18px); }
+.reveal-ready .stagger.in > * { opacity: 1; transform: none; }
+
+/* A container holding interactive controls must never be hidden by a
+   reveal — a focusable but invisible control is a keyboard trap in all
+   but name. The calculator animates nothing; it is simply always visible. */
+.reveal-ready .reveal:has(input, button, select, textarea, a[href]) {
+  opacity: 1; transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal.spin, .reveal.from-right, .reveal.from-left, .stagger > * {
     opacity: 1 !important; transform: none !important; transition: none !important; }
@@ -1217,10 +1257,13 @@
 .ig-bar__val { font-family: var(--font-headline); font-weight: 900; font-size: 19px; color: var(--pg-fg);
   letter-spacing: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ig-bar__track { height: 9px; border-radius: 99px; background: rgba(128,128,128,0.16); overflow: hidden; }
-.ig-bar__track > b { display: block; height: 100%; width: 0; border-radius: 99px;
+.ig-bar__track > b { display: block; height: 100%; width: var(--v, 0%); border-radius: 99px;
   background: linear-gradient(90deg, rgba(var(--glow-1),1), rgba(var(--glow-2),1));
   transition: width 1.2s var(--ease-out); }
-[data-ig].in .ig-bar__track > b { width: var(--v, 0%); }
+/* animate from zero only when JS can drive it — without the enhancement
+   class the bar renders at its real value instead of empty */
+.reveal-ready .ig-bar__track > b { width: 0; }
+.reveal-ready [data-ig].in .ig-bar__track > b { width: var(--v, 0%); }
 .ig-bar.is-dim .ig-bar__val { color: var(--pg-fg-3); }
 .ig-bar.is-dim .ig-bar__track > b { background: rgba(128,128,128,0.45); }
 
@@ -1235,9 +1278,10 @@
 .ig-ring__track { fill: none; stroke: rgba(128,128,128,0.16); stroke-width: 8; }
 .ig-ring__val {
   fill: none; stroke: rgba(var(--glow-1),1); stroke-width: 8; stroke-linecap: round;
-  stroke-dasharray: 0 1000; transition: stroke-dasharray 1.6s var(--ease-out);
+  stroke-dasharray: calc(var(--pct) * 2.7646) 1000; transition: stroke-dasharray 1.6s var(--ease-out);
 }
-[data-ig].in .ig-ring__val { stroke-dasharray: calc(var(--pct) * 2.7646) 1000; }
+.reveal-ready .ig-ring__val { stroke-dasharray: 0 1000; }
+.reveal-ready [data-ig].in .ig-ring__val { stroke-dasharray: calc(var(--pct) * 2.7646) 1000; }
 .ig-ring__num { position: absolute; inset: 0; display: grid; place-items: center;
   font-family: var(--font-headline); font-weight: 900; font-size: 26px; color: var(--pg-fg); letter-spacing: 0; }
 .ig-ring__lbl { font-family: var(--font-text); font-size: 12.5px; line-height: 1.4; color: var(--pg-fg-2);
@@ -1277,8 +1321,9 @@
 .ig-gauge__svg svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
 .ig-gauge .g-track { fill: none; stroke: rgba(128,128,128,0.16); stroke-width: 7.5; }
 .ig-gauge .g-val { fill: none; stroke: url(#ig-gauge-grad); stroke-width: 7.5; stroke-linecap: round;
-  stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.5s var(--ease-out); }
-[data-ig].in .ig-gauge .g-val { stroke-dashoffset: var(--goff, 50); }
+  stroke-dasharray: 100; stroke-dashoffset: var(--goff, 50); transition: stroke-dashoffset 1.5s var(--ease-out); }
+.reveal-ready .ig-gauge .g-val { stroke-dashoffset: 100; }
+.reveal-ready [data-ig].in .ig-gauge .g-val { stroke-dashoffset: var(--goff, 50); }
 /* number + ring share one grid cell — a real (flex/grid) item, never
    absolutely positioned, so it reserves its space and cannot be clipped. */
 .ig-gauge__wrap { width: 248px; height: 248px; display: grid; place-items: center; }
@@ -1292,8 +1337,9 @@
 .ig-seg__top b { color: var(--pg-fg); font-family: var(--font-headline); font-weight: 900; font-size: 16px; letter-spacing: 0; }
 .ig-seg__bar { display: flex; height: 40px; border-radius: 14px; overflow: hidden; background: rgba(128,128,128,0.10); gap: 3px; }
 .ig-seg__bar > span { display: flex; align-items: center; padding: 0 14px; font-family: var(--font-ui); font-size: 12px; font-weight: 600;
-  width: 0; transition: width 1.15s var(--ease-out); white-space: nowrap; overflow: hidden; border-radius: 11px; }
-[data-ig].in .ig-seg__bar > span { width: var(--v, 0%); }
+  width: var(--v, 0%); transition: width 1.15s var(--ease-out); white-space: nowrap; overflow: hidden; border-radius: 11px; }
+.reveal-ready .ig-seg__bar > span { width: 0; }
+.reveal-ready [data-ig].in .ig-seg__bar > span { width: var(--v, 0%); }
 .ig-seg__bar .seg-keep { background: linear-gradient(90deg, rgba(var(--glow-1),1), rgba(var(--glow-2),1)); color: #06140A; }
 .ig-seg__bar .seg-lost { background: rgba(128,128,128,0.22); color: var(--pg-fg-2); }
 
@@ -1316,9 +1362,11 @@
 .ig-stack__layer { background: color-mix(in srgb, var(--pg-fg) 5%, transparent);
   border: 1px solid var(--pg-border); border-radius: 999px;
   padding: 13px 22px 13px 32px; display: flex; flex-direction: column; gap: 3px;
-  opacity: 0; transform: translateX(20px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+  transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
   transition-delay: calc(var(--i,0) * 110ms); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-[data-ig].in .ig-stack__layer { opacity: 1; transform: none; }
+/* hidden start frame only once JS can reveal it — see PROGRESSIVE ENHANCEMENT */
+.reveal-ready .ig-stack__layer { opacity: 0; transform: translateX(20px); }
+.reveal-ready [data-ig].in .ig-stack__layer { opacity: 1; transform: none; }
 .ig-stack__n { font-family: var(--font-ui); font-weight: 700; font-size: 14px; color: var(--pg-fg); }
 .ig-stack__p { font-family: var(--font-text); font-size: 12px; line-height: 1.45; color: var(--pg-fg-2); }
 
@@ -1330,16 +1378,51 @@
 .ig-calc__k { font-family: var(--font-text); font-size: 12.5px; color: var(--pg-fg-2); display: flex; justify-content: space-between; align-items: baseline; }
 .ig-calc__k b { font-family: var(--font-headline); font-weight: 900; font-size: 15px; color: var(--pg-brand); letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .ig-calc input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 4px;
-  background: rgba(128,128,128,0.22); outline: none; cursor: pointer; }
+  background: rgba(128,128,128,0.22); cursor: pointer; }
+/* The slider track is 4px tall, so a ring on the input itself is nearly
+   invisible. Ring the FIELD instead — the label and track together — which
+   gives the indicator something to sit around. (Dru, 2026-09-22: the range
+   inputs removed the outline and supplied no replacement.) */
+.ig-calc__field:focus-within {
+  outline: var(--focus-w) solid var(--focus-col);
+  outline-offset: 6px; border-radius: 10px;
+}
+.ig-calc input[type=range]:focus { outline: none; }
+.ig-calc input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--focus-col), 0 2px 6px rgba(0,0,0,0.4); }
+.ig-calc input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--focus-col); }
 .ig-calc input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 17px; height: 17px; border-radius: 50%;
   background: var(--pg-brand); border: 2px solid var(--pg-bg); box-shadow: 0 0 0 1px rgba(var(--glow-1),0.5), 0 2px 6px rgba(0,0,0,0.4); }
 .ig-calc input[type=range]::-moz-range-thumb { width: 17px; height: 17px; border-radius: 50%; background: var(--pg-brand); border: 2px solid var(--pg-bg); }
 .ig-calc__out { display: flex; flex-direction: column; gap: 12px; }
-.ig-calc__row { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px;
+.ig-calc__row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2px 14px;
   background: color-mix(in srgb, var(--pg-fg) 4%, transparent); border: 1px solid var(--pg-border);
   border-radius: 999px; padding: 13px 22px; }
-.ig-calc__rk { font-family: var(--font-text); font-size: 12.5px; color: var(--pg-fg-2); align-self: center; }
-.ig-calc__rv { font-family: var(--font-headline); font-weight: 900; font-size: 23px; color: var(--pg-fg); letter-spacing: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.ig-calc__rk { font-family: var(--font-text); font-size: 12.5px; color: var(--pg-fg-2); align-self: center; min-width: 0; }
+.ig-calc__rv { font-family: var(--font-headline); font-weight: 900; font-size: 23px; color: var(--pg-fg); letter-spacing: 0; font-variant-numeric: tabular-nums; text-align: right;
+  min-width: 0; white-space: nowrap; }
+
+/* Result rows stack label-over-value when the COMPONENT (not the viewport)
+   is too narrow to seat both on one line. Dru's review (2026-09-22) measured
+   the max value ($12,000,000) overflowing its row by ~41px at a 901px
+   viewport, where the desktop rail left a 653px canvas: `1fr auto` cannot
+   shrink a currency total, and the label kept a large min-content width.
+   Container query so it reacts to the space the calculator actually has,
+   not the outer viewport. `white-space: nowrap` above keeps the currency
+   whole — it must never wrap mid-number. */
+.ig-calc__out { container-type: inline-size; container-name: calcout; }
+@container calcout (max-width: 420px) {
+  .ig-calc__row { grid-template-columns: minmax(0,1fr); border-radius: 22px; padding: 14px 20px; }
+  .ig-calc__rv { text-align: left; font-size: clamp(19px, 7cqi, 23px); }
+  .ig-calc__row--total .ig-calc__rv { font-size: clamp(22px, 8.5cqi, 27px); }
+}
+/* No container-query support: fall back to a viewport rule at the width
+   where the canvas gets tight. */
+@supports not (container-type: inline-size) {
+  @media (max-width: 1100px) {
+    .ig-calc__row { grid-template-columns: minmax(0,1fr); border-radius: 22px; }
+    .ig-calc__rv { text-align: left; }
+  }
+}
 .ig-calc__row--total { border-color: color-mix(in srgb, var(--pg-brand) 36%, transparent); }
 .ig-calc__row--total .ig-calc__rv { color: var(--pg-brand); font-size: 27px; }
 
@@ -1347,13 +1430,16 @@
 .ig-line { width: 100%; }
 .ig-line svg { width: 100%; height: auto; display: block; overflow: visible; }
 .ig-line .ln-grid { stroke: var(--pg-rule); stroke-width: 1; }
-.ig-line .ln-area { fill: url(#ig-line-grad); opacity: 0; transition: opacity 1s var(--ease-out) .3s; }
+.ig-line .ln-area { fill: url(#ig-line-grad); opacity: 0.5; transition: opacity 1s var(--ease-out) .3s; }
 .ig-line .ln-path { fill: none; stroke: rgba(var(--glow-1),1); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: var(--len, 1000); stroke-dashoffset: var(--len, 1000); transition: stroke-dashoffset 1.7s var(--ease-out); }
-.ig-line .ln-dot { fill: rgba(var(--glow-1),1); opacity: 0; transition: opacity .4s var(--ease-out); }
-[data-ig].in .ig-line .ln-path { stroke-dashoffset: 0; }
-[data-ig].in .ig-line .ln-area { opacity: 0.5; }
-[data-ig].in .ig-line .ln-dot { opacity: 1; transition-delay: calc(1.2s + var(--i,0) * 90ms); }
+  stroke-dasharray: var(--len, 1000); stroke-dashoffset: 0; transition: stroke-dashoffset 1.7s var(--ease-out); }
+.ig-line .ln-dot { fill: rgba(var(--glow-1),1); opacity: 1; transition: opacity .4s var(--ease-out); }
+.reveal-ready .ig-line .ln-area { opacity: 0; }
+.reveal-ready .ig-line .ln-path { stroke-dashoffset: var(--len, 1000); }
+.reveal-ready .ig-line .ln-dot { opacity: 0; }
+.reveal-ready [data-ig].in .ig-line .ln-path { stroke-dashoffset: 0; }
+.reveal-ready [data-ig].in .ig-line .ln-area { opacity: 0.5; }
+.reveal-ready [data-ig].in .ig-line .ln-dot { opacity: 1; transition-delay: calc(1.2s + var(--i,0) * 90ms); }
 .ig-line__axis { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 11px; color: var(--pg-fg-3); margin-top: 8px; }
 
 /* ═════════════════════════════════════════════════════════════════
@@ -1445,8 +1531,16 @@
 }
 .webdoc[data-frame="slide"] .doc-section + .doc-section { border-top: 0; }
 
-/* ── responsive: rail becomes a "Select a chapter" dropdown ─────── */
-@media (max-width: 900px) {
+/* ── responsive: rail becomes a "Select a chapter" dropdown ───────
+   Boundary raised 900 → 1100px (Dru's review, 2026-09-22). At 901px the
+   248px rail left only ~653px of canvas, so desktop type, section padding,
+   tables, the calculator and the two-column pairs all ran in a much
+   narrower space than they had at 900px — the source of the cramped
+   layouts and overflow between 901 and 1100px. 1100px also lines this up
+   with .doc-pair's own stacking rule, so the rail and the pairs now change
+   at the same width instead of fighting across a 200px band.
+   The paired `min-width: 1101px` desktop rules live in styles.css. */
+@media (max-width: 1100px) {
   .webdoc { grid-template-columns: 1fr; }
   .doc-rail {
     position: sticky; top: 0; z-index: 50; height: auto;
@@ -1458,7 +1552,9 @@
   .doc-rail__eyebrow, .doc-rail__foot { display: none; }
   .doc-rail__select {
     display: inline-flex; align-items: center; justify-content: space-between; gap: 12px;
-    width: 100%; max-width: 420px; padding: 12px 18px;
+    /* was width:100% — the PDF action is now a sibling on this row, so the
+       trigger takes the space it needs and leaves the rest */
+    flex: 1 1 auto; min-width: 0; max-width: 420px; padding: 12px 18px;
     border: 1px solid var(--pg-border-s); border-radius: 999px;
     background: color-mix(in srgb, #ffffff 5%, transparent);
     font-family: var(--font-ui); font-weight: 500; font-size: 14.5px; color: var(--pg-fg);

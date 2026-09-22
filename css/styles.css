@@ -42,6 +42,15 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 /* Reading-progress bar already fixed by the module; lift above the shader. */
 .doc-progress { z-index: 40; }
 
+/* Visually hidden, still announced. Used for live regions and for text
+   that gives a screen reader context the visual layout already provides. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
 /* ── Skip link ───────────────────────────────────────────────────── */
 .skip-link {
   position: fixed; top: 12px; left: 12px; z-index: 100;
@@ -51,7 +60,61 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   transform: translateY(-150%); transition: transform .18s var(--ease-out);
 }
 .skip-link:focus { transform: translateY(0); }
+/* .doc-canvas and destination headings take tabindex="-1" so chapter
+   navigation can move focus to them. They are never tab stops, so a ring
+   on a programmatic focus would be noise — :focus-visible below still
+   covers the case where a browser decides the ring is warranted. */
 .doc-canvas:focus { outline: none; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOCUS — one shared indicator for the whole document
+   ───────────────────────────────────────────────────────────────────
+   Dru's review (2026-09-22): component rules removed outlines while no
+   page-level :focus-visible treatment existed, so most controls fell back
+   to whatever the browser drew and the range inputs lost their indicator
+   entirely. The token set already carried a focus colour; it just was not
+   being applied.
+
+   Jade (--border-focus) rather than the amber --core-focus: on this black
+   ground jade is the brand accent already used for active state, and it
+   clears 3:1 against both the page and the rail. 3px at 3px offset so the
+   ring reads at a glance and is never confused with a hover border.
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  --focus-col: var(--border-focus, #00D639);
+  --focus-w: 3px;
+  --focus-off: 3px;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: var(--focus-w) solid var(--focus-col);
+  outline-offset: var(--focus-off);
+  border-radius: 4px;
+}
+/* Pill-shaped and card controls keep their own silhouette so the ring
+   does not cut a square corner across a rounded edge. */
+.navrow:focus-visible,
+.doc-rail__select:focus-visible,
+.rail-action:focus-visible { border-radius: 999px; }
+.doc-slider__dot:focus-visible { border-radius: 50%; }
+/* The download link is a text link with a bottom rule; inset the ring
+   slightly so it hugs the label rather than the rail edge. */
+.rail-action--tertiary:focus-visible { outline-offset: 4px; border-radius: 6px; }
+
+/* Forced colours: the system supplies its own indicator, but only if we
+   don't override the colour. Hand the ring back to the OS. */
+@media (forced-colors: active) {
+  a:focus-visible, button:focus-visible, input:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible,
+  .ig-calc__field:focus-within {
+    outline: 3px solid Highlight; outline-offset: 3px;
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    COVER HERO — frosted-glass title card over the live shader
@@ -81,9 +144,23 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
     radial-gradient(120% 120% at 100% 100%, rgba(29, 140, 195, 0.16), transparent 60%),
     rgba(0, 0, 0, 0.55);
 }
+/* One source of truth for the cover height: the OUTER section owns it
+   (.doc-section.is-hero, 92vh desktop / 78vh ≤760px in forma-webdoc.css)
+   and the glass fills whatever that is. Dru's review (2026-09-22) found a
+   ~90px gap at 761–900px, where the outer hero still held 92vh while the
+   glass was cut to 82vh and .doc-section's vertical centring split the
+   unused 10vh above and below. Don't reintroduce a second min-height. */
 @media (max-width: 900px) {
-  .cover-glass { padding: 40px 24px; gap: 30px; border-radius: 0; min-height: 82vh; }
+  .cover-glass { padding: 40px 24px; gap: 30px; border-radius: 0; min-height: 0; }
 }
+/* .doc-section is a centring flex COLUMN, so `flex` here grows the well and
+   the glass along the block axis — making the glass exactly as tall as the
+   section at every width, with no second min-height to drift out of step.
+   flex-basis must stay 0 (not auto): on `align-items: stretch` the well is
+   already full width, and an auto basis would size it to its content's
+   max-content width instead — 837px inside a 375px viewport. */
+.cover-hero .doc-well { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; }
+.cover-hero .cover-glass { flex: 1 1 0; min-width: 0; }
 
 /* ═══════════════════════════════════════════════════════════════════
    SECTION OPENER — full-bleed split: chapter heading on the dark ground at
@@ -273,9 +350,10 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
   border: 3px solid var(--pg-mint); display: block;
 }
 
-/* ── Mobile: the module collapses the rail to a top bar already; make sure
-   the cover card breathes and the shader still fills behind. ─────────── */
-@media (max-width: 900px) {
+/* ── Compact rail: the module collapses the rail to a top bar already; make
+   sure the cover card breathes and the shader still fills behind.
+   Boundary tracks the rail collapse — raised 900 → 1100px, 2026-09-22. ── */
+@media (max-width: 1100px) {
   #glowfx { height: 100dvh; }
 }
 
@@ -283,7 +361,11 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
    Uses the Sage kit pill (border-radius 999px, font-ui). Lives inside
    .doc-rail__list so it sits under "About this research" on desktop and
    inside the chapter dropdown on mobile. Inherits the rail's --pg-* tokens. */
-.doc-rail__actions { display: flex; flex-direction: column; align-items: center; gap: 8px; width: fit-content; margin: 16px 10px 4px; }
+/* Sibling of the chapter list, not an item in it. On desktop it sits under
+   the list; in the compact rail it moves beside the "Select a chapter"
+   trigger so it is reachable without opening the menu at all. */
+.doc-rail__actions { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: fit-content; margin: 18px 10px 4px; }
+.rail-action__meta { font-family: var(--font-ui); font-size: 12px; color: var(--pg-fg-3); padding-left: 2px; }
 .rail-action {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 16px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
@@ -293,12 +375,26 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 .rail-action svg { width: 15px; height: 15px; flex: none; }
 /* Download — Sage tertiary: white text link, white underline under icon + label.
    Uses border-bottom (not text-decoration) so the rule also spans the icon. */
+/* min-height 24px so the target clears the WCAG 2.2 minimum; the visible
+   rule stays tight to the label via the inner span's border. */
 .rail-action--tertiary { width: auto; gap: 7px;
-  background: transparent; border: 0; border-radius: 0; padding: 5px 2px 3px;
+  background: transparent; border: 0; border-radius: 0; padding: 7px 2px 5px;
+  min-height: 24px;
   color: #fff; font-weight: 500; text-decoration: none;
   border-bottom: 1px solid #fff; }
 .rail-action--tertiary:hover { color: #fff; border-bottom-color: rgba(255,255,255,.6); }
-@media (max-width: 900px) { .doc-rail__actions { margin: 8px 0 2px; } }
+/* Compact rail: the action sits on the trigger row, to the right of
+   "Select a chapter", so it never hides behind the chapter scroller. */
+@media (max-width: 1100px) {
+  .doc-rail__actions { flex-direction: row; align-items: center; gap: 10px; margin: 0 0 0 14px; flex: none; }
+  .rail-action__meta { display: none; }
+}
+@media (max-width: 560px) {
+  /* No room for both on one line at phone widths — keep the label, drop
+     the icon's breathing room rather than wrapping the row. */
+  .doc-rail__actions { margin-left: 10px; }
+  .rail-action--tertiary { font-size: 12.5px; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    LEGIBILITY SCALE — 2026-09-16
@@ -369,7 +465,7 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
    page. Fill the viewport and open up the vertical padding so the content sits
    in proper top/bottom space. Hero, dividers and the exec card stack keep
    their own floors (their two-class selectors win on specificity). */
-@media (min-width: 901px) {
+@media (min-width: 1101px) {
   .webdoc { --sec-pad-y: clamp(96px, 12vh, 160px); }
   .doc-section { min-height: 100vh; }
 }
@@ -514,3 +610,137 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
 
 /* Stat-page opener with a longer lede (market reality): text 40% not a third. */
 .doc-pair.is-figwide.is-text40 { grid-template-columns: 2fr 3fr; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE BACKSTOP — must stay last in this file
+   ───────────────────────────────────────────────────────────────────
+   Dru's review (2026-09-22) found "Emerging market reality" cropped at
+   375px: `.is-text40` and `.is-dense` set grid-template-columns AFTER
+   the `max-width:1100px` stacking rule higher up, so at equal
+   specificity the later rule won and the pair stayed two-column at
+   every width — 514px of content inside a 375px section, clipped by
+   `overflow: clip`.
+
+   Any NEW .doc-pair modifier that sets grid-template-columns must go
+   ABOVE this block, or be added to the selector list here.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .doc-pair,
+  .doc-pair.is-figwide,
+  .doc-pair.is-figwide.is-dense,
+  .doc-pair.is-figwide.is-text40 { grid-template-columns: 1fr; }
+  /* the dense variant shrank its type to survive a narrow column —
+     stacked, it has the full width back, so restore the reading size */
+  .doc-pair.is-dense .doc-body { font-size: 18px; line-height: 1.65; }
+  .doc-pair.is-dense .doc-h2 { font-size: 32px; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLABLE TABLE — make the overflow discoverable
+   ───────────────────────────────────────────────────────────────────
+   Dru's review (2026-09-22): the two wide tables sit in plain
+   `overflow-x: auto` wrappers with an 820px min-width. At intermediate
+   widths the visible columns can end cleanly at the edge, so there was
+   no cue that more data existed off screen, and no keyboard affordance.
+
+   web-doc.js adds .is-scrollable only when scrollWidth > clientWidth, and
+   makes the wrapper focusable in that case only — a focusable region that
+   cannot scroll is just a dead tab stop. .is-atstart / .is-atend track the
+   scroll position so a fade appears only on the side with content beyond.
+   ═══════════════════════════════════════════════════════════════════ */
+/* The outer .tablescroll is a static positioning context for the fades;
+   .tablescroll__view is the element that actually scrolls. Fades on the
+   outer box therefore stay still while the table moves underneath. */
+.tablescroll { position: relative; }
+.tablescroll__view { overflow-x: auto; }
+.tablescroll__hint { display: none; }
+.tablescroll.is-scrollable > .tablescroll__hint {
+  /* Sits to the RIGHT (Jay, 2026-09-22): the cue belongs at the edge where
+     the content is actually cut off, not at the start of the row. */
+  display: flex; align-items: center; justify-content: flex-end; gap: 7px;
+  font-family: var(--font-ui); font-size: 13px; color: var(--pg-fg-3);
+  margin-bottom: 10px;
+}
+.tablescroll.is-scrollable > .tablescroll__hint svg { width: 15px; height: 15px; flex: none; }
+
+/* "Scroll" or "Swipe" by input device, not by screen size — a touch laptop
+   swipes at 1400px and a mouse user scrolls at 500px, so width is the wrong
+   signal. `any-pointer: coarse` is true when ANY available pointer is a
+   finger, which is the case where "swipe" is the natural word. */
+@media (any-pointer: coarse) {
+  /* Swap the whole phrase, not just the verb: collapsing one word with
+     font-size:0 leaves its trailing space behind ("Swipe  horizontally"). */
+  .tablescroll__verb { font-size: 0; }
+  .tablescroll__verb::after { content: "Swipe horizontally to see more"; font-size: 13px; }
+}
+/* The fade must cover the SCROLLING VIEW only. Anchored to the wrapper's
+   full height it also sat over the hint above, clipping "…see more".
+   --tsHintH is set by web-doc.js to the hint's height + its margin. */
+.tablescroll::before,
+.tablescroll::after {
+  content: ""; position: absolute; top: var(--tsHintH, 0px); bottom: 0; width: 48px;
+  z-index: 2; pointer-events: none; opacity: 0;
+  transition: opacity .18s var(--ease-out);
+}
+.tablescroll::before { left: 0;  background: linear-gradient(90deg,  #070807, transparent); }
+.tablescroll::after  { right: 0; background: linear-gradient(270deg, #070807, transparent); }
+/* Shown only where content actually continues past that edge. */
+.tablescroll.is-scrollable:not(.is-atstart)::before { opacity: 1; }
+.tablescroll.is-scrollable:not(.is-atend)::after { opacity: 1; }
+
+.tablescroll__view:focus-visible {
+  outline: var(--focus-w) solid var(--focus-col);
+  outline-offset: 2px; border-radius: 6px;
+}
+
+/* Forced colours strips gradients, so the text hint is the real
+   affordance — the fade must never be the only cue. */
+@media (forced-colors: active) {
+  .tablescroll::before, .tablescroll::after { display: none; }
+}
+
+/* Publication reference in the document body (About this research). Set a
+   step down from body copy but still at a full reading contrast — it is
+   citable metadata, not fine print. */
+.doc-docref {
+  margin-top: 26px; padding-top: 18px;
+  border-top: 1px solid var(--pg-rule);
+  font-family: var(--font-ui); font-size: 15px; color: var(--pg-fg-2);
+}
+
+
+/* ── 320px: the narrowest supported width ────────────────────────────
+   Two failures showed up only here (Dru's review, 2026-09-22, which asked
+   for a 320px test). Both are min-width floors that stop being affordable
+   once the viewport drops below ~340px. */
+@media (max-width: 360px) {
+  /* .ig-fig carries min-width:150px, so two cards plus the 16px gap need
+     316px of content box — more than a 320px viewport has after padding.
+     One card per row below 360px. */
+  .ig-figs { flex-direction: column; }
+  .ig-figs .ig-fig { min-width: 0; width: 100%; }
+  .doc-pair > .ig-figs,
+  .doc-pair__col > .ig-figs,
+  .doc-pair > .ig-figs:has(> .ig-fig:nth-child(5):last-child),
+  .doc-pair__col > .ig-figs:has(> .ig-fig:nth-child(5):last-child) { grid-template-columns: 1fr; }
+
+  /* The cover's date/sponsor line holds two nowrap spans on one row; at
+     320px they cannot both fit, so let the group wrap to the left instead
+     of pushing past the edge. */
+  .cover-glass__top { flex-wrap: wrap; gap: 14px; }
+  .cover-glass__top .m-caption { justify-content: flex-start; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   Running heads removed (Jay, 2026-09-22, during QA of Dru's review)
+   ───────────────────────────────────────────────────────────────────
+   The "<Chapter> · continued" labels are gone from every page. Several
+   elements that used to sit BELOW one still carry the inline
+   `margin-top` that spaced them off it — now the first thing on the
+   page, that margin just pushes the content down inside a vertically
+   centred section. Zero it for a first child only; the same class
+   keeps its margin wherever it follows something.
+   ═══════════════════════════════════════════════════════════════════ */
+.doc-well > :first-child[style*="margin-top"] { margin-top: 0 !important; }

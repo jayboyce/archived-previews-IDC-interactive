@@ -12,7 +12,7 @@ rendered output so it can be published via GitHub Pages, which requires a public
 repo on a free plan. Do not develop here — changes made here will be overwritten
 on the next publish.
 
-Built from `main` @ `dc62150` — the 2026-09-21 exec-summary card, column-split and Conclusion-merge amends.
+Built from `main` @ `609a3be` — resolves Dru's 2026-09-22 design, accessibility and embedding review: responsive fixes at 320–1440px, a page that renders without JavaScript, link-based chapter navigation with a consistent focus treatment, and the running heads removed.
 
 ## What is included
 
