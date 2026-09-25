@@ -1112,8 +1112,8 @@
 .flipcard:hover .flipcard__inner,
 .flipcard:focus-visible .flipcard__inner,
 .flipcard.is-flipped .flipcard__inner { transform: rotateY(180deg); }
-.flipcard:focus-visible { outline: none; }
-.flipcard:focus-visible .flipcard__face { box-shadow: 0 0 0 2px var(--pg-brand), 0 18px 48px rgba(0,0,0,0.4); }
+.flipcard:focus, .flipcard:focus-visible { outline: none; box-shadow: none; }
+.flipcard:focus-visible .flipcard__face { box-shadow: var(--focus-ring), 0 18px 48px rgba(0,0,0,0.4); }
 .flipcard__face {
   position: absolute; inset: 0; border-radius: 28px; overflow: hidden;
   -webkit-backface-visibility: hidden; backface-visibility: hidden;
@@ -1383,13 +1383,12 @@
    invisible. Ring the FIELD instead — the label and track together — which
    gives the indicator something to sit around. (Dru, 2026-09-22: the range
    inputs removed the outline and supplied no replacement.) */
-.ig-calc__field:focus-within {
-  outline: var(--focus-w) solid var(--focus-col);
-  outline-offset: 6px; border-radius: 10px;
+.ig-calc__field:has(input:focus-visible) {
+  box-shadow: var(--focus-ring); border-radius: 10px;
 }
-.ig-calc input[type=range]:focus { outline: none; }
-.ig-calc input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--focus-col), 0 2px 6px rgba(0,0,0,0.4); }
-.ig-calc input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--focus-col); }
+/* The ring lives on the field, so the input itself draws none. */
+.ig-calc input[type=range]:focus,
+.ig-calc input[type=range]:focus-visible { outline: none; box-shadow: none; }
 .ig-calc input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 17px; height: 17px; border-radius: 50%;
   background: var(--pg-brand); border: 2px solid var(--pg-bg); box-shadow: 0 0 0 1px rgba(var(--glow-1),0.5), 0 2px 6px rgba(0,0,0,0.4); }
 .ig-calc input[type=range]::-moz-range-thumb { width: 17px; height: 17px; border-radius: 50%; background: var(--pg-brand); border: 2px solid var(--pg-bg); }
@@ -1654,7 +1653,7 @@
 }
 .bento:hover { transform: translateY(-3px); border-color: var(--pg-border-s); }
 .bento:hover::before { opacity: 1; }
-.bento:focus-visible { outline: none; border-color: var(--pg-brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--pg-brand) 60%, transparent); }
+.bento:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .bento > * { position: relative; z-index: 2; }
 
 /* unified statement — Sage Text ~26px regular, identical on every card */

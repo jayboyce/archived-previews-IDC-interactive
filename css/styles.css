@@ -72,18 +72,36 @@ body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
    Dru's review (2026-09-22): component rules removed outlines while no
    page-level :focus-visible treatment existed, so most controls fell back
    to whatever the browser drew and the range inputs lost their indicator
-   entirely. The token set already carried a focus colour; it just was not
-   being applied.
+   entirely.
 
-   Jade (--border-focus) rather than the amber --core-focus: on this black
-   ground jade is the brand accent already used for active state, and it
-   clears 3:1 against both the page and the rail. 3px at 3px offset so the
-   ring reads at a glance and is never confused with a hover border.
+   Dru's follow-up (2026-09-25): use Sage's standard ring, a black inner
+   ring and a yellow outer ring, drawn with box-shadow rather than an
+   outline. The black ring separates the yellow from whatever the control
+   sits on, so it holds on any background. The rule sequence is Dru's:
+   ring on :focus for browsers without :focus-visible, removed again when
+   the focus came from a mouse, ring on :focus-visible for keyboard focus.
    ═══════════════════════════════════════════════════════════════════ */
 :root {
-  --focus-col: var(--border-focus, #00D639);
-  --focus-w: 3px;
-  --focus-off: 3px;
+  --focus-ring: 0 0 0 2px #000, 0 0 0 4px var(--core-focus, #FFB500);
+}
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+summary:focus,
+[tabindex]:not([tabindex="-1"]):focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+summary:focus:not(:focus-visible),
+[tabindex]:not([tabindex="-1"]):focus:not(:focus-visible) {
+  box-shadow: none;
 }
 a:focus-visible,
 button:focus-visible,
@@ -92,8 +110,7 @@ select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible,
 [tabindex]:not([tabindex="-1"]):focus-visible {
-  outline: var(--focus-w) solid var(--focus-col);
-  outline-offset: var(--focus-off);
+  box-shadow: var(--focus-ring);
   border-radius: 4px;
 }
 /* Pill-shaped and card controls keep their own silhouette so the ring
@@ -102,16 +119,15 @@ summary:focus-visible,
 .doc-rail__select:focus-visible,
 .rail-action:focus-visible { border-radius: 999px; }
 .doc-slider__dot:focus-visible { border-radius: 50%; }
-/* The download link is a text link with a bottom rule; inset the ring
-   slightly so it hugs the label rather than the rail edge. */
-.rail-action--tertiary:focus-visible { outline-offset: 4px; border-radius: 6px; }
+.rail-action--tertiary:focus-visible { border-radius: 6px; }
 
-/* Forced colours: the system supplies its own indicator, but only if we
-   don't override the colour. Hand the ring back to the OS. */
+/* Forced colours (e.g. Windows High Contrast) throws box-shadow away, so
+   the ring above would vanish. Give those users a system-coloured outline. */
 @media (forced-colors: active) {
   a:focus-visible, button:focus-visible, input:focus-visible,
+  select:focus-visible, textarea:focus-visible, summary:focus-visible,
   [tabindex]:not([tabindex="-1"]):focus-visible,
-  .ig-calc__field:focus-within {
+  .ig-calc__field:has(input:focus-visible) {
     outline: 3px solid Highlight; outline-offset: 3px;
   }
 }
@@ -689,10 +705,7 @@ summary:focus-visible,
 .tablescroll.is-scrollable:not(.is-atstart)::before { opacity: 1; }
 .tablescroll.is-scrollable:not(.is-atend)::after { opacity: 1; }
 
-.tablescroll__view:focus-visible {
-  outline: var(--focus-w) solid var(--focus-col);
-  outline-offset: 2px; border-radius: 6px;
-}
+.tablescroll__view:focus-visible { border-radius: 6px; }
 
 /* Forced colours strips gradients, so the text hint is the real
    affordance — the fade must never be the only cue. */
